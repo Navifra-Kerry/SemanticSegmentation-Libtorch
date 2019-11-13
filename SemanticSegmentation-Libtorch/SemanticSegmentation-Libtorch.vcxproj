@@ -86,13 +86,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cocoapi\coco.cpp" />
+    <ClCompile Include="cocoapi\cocoNote.cpp" />
     <ClCompile Include="cocoapi\mask.cpp" />
     <ClCompile Include="cocoapi\mask_api.cpp" />
     <ClCompile Include="SemanticSegmentation-Libtorch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cocoapi\coco.h" />
+    <ClInclude Include="cocoapi\cocoNote.h" />
     <ClInclude Include="cocoapi\mask.h" />
     <ClInclude Include="cocoapi\mask_api.h" />
   </ItemGroup>

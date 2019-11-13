@@ -1,6 +1,8 @@
 ﻿#include <iostream>
+#include "cocoapi/cocoNote.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	COCONote test;
+	test.Parse("annotations/instances_val2017.json");
 }
