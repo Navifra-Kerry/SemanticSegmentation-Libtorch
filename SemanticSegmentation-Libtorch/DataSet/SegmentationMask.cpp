@@ -127,7 +127,8 @@ std::ostream& operator << (std::ostream& os, const Polygons& bml) {
 SegmentationMask::SegmentationMask(const SegmentationMask& other) :polygons_(other.polygons_), size_(other.size_), mode_(other.mode_) {}
 
 SegmentationMask::SegmentationMask(std::vector<std::vector<std::vector<double>>> polygons, std::pair<int, int> size, std::string mode) : size_(size), mode_(mode) {
-	for (auto& poly : polygons) {
+	for (auto& poly : polygons) 
+	{
 		polygons_.emplace_back(poly, size, mode);
 	}
 }

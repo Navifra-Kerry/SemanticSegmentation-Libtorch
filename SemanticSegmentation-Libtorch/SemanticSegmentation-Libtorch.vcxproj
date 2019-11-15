@@ -76,7 +76,7 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -100,6 +100,10 @@
     <ClCompile Include="DataSet\COCODataSet.cpp" />
     <ClCompile Include="DataSet\COCODetection.cpp" />
     <ClCompile Include="DataSet\SegmentationMask.cpp" />
+    <ClCompile Include="models\IntermediateLayerGetter.cpp" />
+    <ClCompile Include="models\resnet.cpp" />
+    <ClCompile Include="models\segmentation\DeeplabV3.cpp" />
+    <ClCompile Include="models\segmentation\SegmentationModel.cpp" />
     <ClCompile Include="SemanticSegmentation-Libtorch.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +113,10 @@
     <ClInclude Include="DataSet\COCODataSet.h" />
     <ClInclude Include="DataSet\COCODetection.h" />
     <ClInclude Include="DataSet\SegmentationMask.h" />
+    <ClInclude Include="models\IntermediateLayerGetter.h" />
+    <ClInclude Include="models\resnet.h" />
+    <ClInclude Include="models\segmentation\DeeplabV3.h" />
+    <ClInclude Include="models\segmentation\SegmentationModel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -19,6 +19,12 @@
     <Filter Include="DataSet">
       <UniqueIdentifier>{aadc0237-aa5b-4630-9bb6-bfe85cba75fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="models">
+      <UniqueIdentifier>{58cf8509-a091-401a-b104-2b5ef54987a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="models\segmentation">
+      <UniqueIdentifier>{59d98bee-7623-421f-b380-d319064b1033}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SemanticSegmentation-Libtorch.cpp">
@@ -42,6 +48,18 @@
     <ClCompile Include="DataSet\SegmentationMask.cpp">
       <Filter>DataSet</Filter>
     </ClCompile>
+    <ClCompile Include="models\segmentation\DeeplabV3.cpp">
+      <Filter>models\segmentation</Filter>
+    </ClCompile>
+    <ClCompile Include="models\segmentation\SegmentationModel.cpp">
+      <Filter>models\segmentation</Filter>
+    </ClCompile>
+    <ClCompile Include="models\IntermediateLayerGetter.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="models\resnet.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cocoapi\mask.h">
@@ -61,6 +79,18 @@
     </ClInclude>
     <ClInclude Include="DataSet\SegmentationMask.h">
       <Filter>DataSet</Filter>
+    </ClInclude>
+    <ClInclude Include="models\segmentation\DeeplabV3.h">
+      <Filter>models\segmentation</Filter>
+    </ClInclude>
+    <ClInclude Include="models\segmentation\SegmentationModel.h">
+      <Filter>models\segmentation</Filter>
+    </ClInclude>
+    <ClInclude Include="models\IntermediateLayerGetter.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\resnet.h">
+      <Filter>models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

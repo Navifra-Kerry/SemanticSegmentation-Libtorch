@@ -13,7 +13,8 @@ COCODataSet::COCODataSet(std::string annFile, std::string root, bool remove_imag
 	:_coco_detection(root, annFile)
 {
 	std::sort(_coco_detection._ids.begin(), _coco_detection._ids.end());
-	if (remove_images_without_annotations)
+
+	//if (remove_images_without_annotations)
 	{
 		std::vector<int> ids;
 		for (auto& i : _coco_detection._ids)
@@ -46,8 +47,13 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	std::vector<std::vector<std::vector<double>>> polys;
 	for (auto& obj : anno)
 		polys.push_back(obj._segmentation);
+
 	auto mask = new rcnn::structures::SegmentationMask(polys,
 		std::make_pair(static_cast<int64_t>(img.cols), static_cast<int64_t>(img.rows)), "poly");
+
+	auto mask_tensor = mask->GetMaskTensor().clone();
+
+	std::cout << mask_tensor.sizes();
 
 	return { img_tensor.clone(), mask->GetMaskTensor().clone() };
 }
