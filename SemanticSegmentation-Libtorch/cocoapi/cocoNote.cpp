@@ -328,9 +328,13 @@ std::vector<int> COCONote::GetCatIds(const std::vector<std::string> catNms,
 {
 	std::vector<int> returnIds;
 	std::vector<Categories> cats;
-	for(auto& cat: _cocodataset->get("categories"))
+
+	Array::Ptr a = _cocodataset->get("categories").extract<Array::Ptr>();
+
+	for (int i = 0; i < a->size(); i++)
 	{
-		cats.emplace_back(cat.extract<Object::Ptr>());
+		Object::Ptr j = a->get(i).extract<Object::Ptr>();
+		cats.emplace_back(j);
 	}
 
 	if(catNms.size() != 0)

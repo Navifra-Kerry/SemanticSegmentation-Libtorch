@@ -45,9 +45,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\local\libtorch\include\torch\csrc\api\include;D:\local\libtorch\include;D:\local\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\local\libtorch\lib;D:\local\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\local\libtorch\include\torch\csrc\api\include;D:\local\libtorch\include;D:\local\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\local\libtorch\lib;D:\local\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -64,6 +68,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\Poco-1.9.4\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>c10.lib;torch.lib;opencv_world410d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -77,24 +82,33 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\Poco-1.9.4;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>c10.lib;torch.lib;opencv_world410.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Poco-1.9.4\lib\x64;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cocoapi\cocoNote.cpp" />
     <ClCompile Include="cocoapi\mask.cpp" />
     <ClCompile Include="cocoapi\mask_api.cpp" />
+    <ClCompile Include="DataSet\COCODataSet.cpp" />
+    <ClCompile Include="DataSet\COCODetection.cpp" />
+    <ClCompile Include="DataSet\SegmentationMask.cpp" />
     <ClCompile Include="SemanticSegmentation-Libtorch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cocoapi\cocoNote.h" />
     <ClInclude Include="cocoapi\mask.h" />
     <ClInclude Include="cocoapi\mask_api.h" />
+    <ClInclude Include="DataSet\COCODataSet.h" />
+    <ClInclude Include="DataSet\COCODetection.h" />
+    <ClInclude Include="DataSet\SegmentationMask.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
