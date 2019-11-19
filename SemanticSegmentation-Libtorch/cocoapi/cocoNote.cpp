@@ -76,7 +76,9 @@ Annotation::Annotation(const Object* j)
 Annotation::Annotation(): _id(0), _image_id(0), _category_id(0), _area(0), _iscrowd(0){}
 
 Annotation::Annotation(const Annotation& obj) :
-	_id(obj._id), _image_id(obj._image_id), _category_id(obj._category_id),_area(obj._area), _iscrowd(obj._iscrowd)
+	_id(obj._id), _image_id(obj._image_id), _category_id(obj._category_id), _segmentation(obj._segmentation),
+	_counts(obj._counts), _compressed_rle(obj._compressed_rle), _size(obj._size), _area(obj._area), _bbox(obj._bbox),
+	_iscrowd(obj._iscrowd)
 {
 }
 
@@ -190,7 +192,7 @@ void COCONote::Parse()
 				_imgToAnns[j->get("image_id").convert<int>()] = std::vector<Annotation> {Annotation(j)};
 			}
 			
-			_anns[static_cast<int64_t>(j->get("id").convert<double>())] = Annotation(j);
+			_anns[static_cast<int64_t>(j->get("id").convert<int64_t>())] = Annotation(j);
 		}
 	}
 
