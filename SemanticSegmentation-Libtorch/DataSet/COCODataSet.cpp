@@ -1,5 +1,5 @@
 #include "cocoDataSet.h"
-#include "SegmentationMask.h"
+#include "../cocoapi/mask.h"
 
 bool has_valid_annotation(std::vector<Annotation> anno) 
 {
@@ -28,6 +28,16 @@ COCODataSet::COCODataSet(std::string annFile, std::string root, bool remove_imag
 	}
 }
 
+std::vector<coco::RLE> _frString(std::vector<coco::RLE>& rleObjs)
+{
+	size_t n = rleObjs.size();
+	std::vector<coco::RLE>  R = std::vector<coco::RLE>(n);
+	for (size_t i = 0; i < n; ++i)
+		coco::rleFrString(&R[i], (char*)rleObjs[i].cnts, rleObjs[i].h, rleObjs[i].w);
+
+	return R;
+}
+
 torch::data::Example<> COCODataSet::get(size_t idx)
 {
 	auto coco_data = _coco_detection.get(idx);
@@ -35,7 +45,8 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 
 	torch::Tensor img_tensor = torch::from_blob(img.data, { img.rows, img.cols, 3 }, torch::kByte);
 	img_tensor = img_tensor.permute({ 2, 0, 1 });
-
+	
+	//Anatation 가져오기
 	std::vector<Annotation> anno = coco_data.target;
 	for (auto ann = anno.begin(); ann != anno.end();) {
 		if (ann->_iscrowd)
@@ -44,18 +55,57 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 			ann++;
 	}
 
+	//Mask Polygon 과 카테고리 가져 오기
+	std::vector<int> cats;
 	std::vector<std::vector<std::vector<double>>> polys;
 	for (auto& obj : anno)
+	{
 		polys.push_back(obj._segmentation);
+		cats.push_back(obj._category_id);
+	}
 
-	auto mask = new rcnn::structures::SegmentationMask(polys,
-		std::make_pair(static_cast<int64_t>(img.cols), static_cast<int64_t>(img.rows)), "poly");
+	std::vector<torch::Tensor>  mask_tensors;
 
-	auto mask_tensor = mask->GetMaskTensor().clone();
+	//Polygon To Mask Tensors
+	for (int k= 0; k< polys.size(); k++)
+	{
+		auto frPoly = coco::frPoly(polys[k], img.rows, img.cols);
 
-	std::cout << mask_tensor.sizes();
+		coco::RLEs Rs(1);
 
-	return { img_tensor.clone(), mask->GetMaskTensor().clone() };
+		coco::rleFrString(Rs._R, (char*)frPoly[0].counts.c_str(), std::get<0>(frPoly[0].size), std::get<1>(frPoly[0].size));
+		coco::siz h = Rs._R[0].h, w = Rs._R[0].w, n = Rs._n;
+		coco::Masks masks = coco::Masks(img.cols, img.rows, 1);
+
+		coco::rleDecode(Rs._R, masks._mask, n);
+
+		int shape = h * w * n;
+		torch::Tensor mask_tensor = torch::empty({ shape });
+
+		float* data1 = mask_tensor.data_ptr<float>();
+		for (size_t i = 0; i < shape; ++i) {
+			data1[i] = static_cast<float>(masks._mask[i] * cats[k]);
+		}
+
+		mask_tensor = mask_tensor.reshape({ static_cast<int64_t>(n),static_cast<int64_t>(w),
+			static_cast<int64_t>(h) }).permute({ 2, 1, 0 }).squeeze(2);//fortran order h, w, n
+
+		mask_tensors.push_back(mask_tensor);
+	}
+	
+	auto mask_tensor = torch::stack(mask_tensors);
+
+	//Mask에 Category mapping
+	torch::Tensor target, _;
+	std::tie(target,_)= torch::max(mask_tensor, 0);
+
+	///transform 구현 해야함 임시
+	target = target.resize_({520 , 520});
+	img_tensor = img_tensor.resize_({ 3,520,520 });
+
+	std::cout << target.sizes() << " " << img_tensor.sizes() << std::endl;
+
+	return { img_tensor.clone(), target.clone() };
 }
 
 

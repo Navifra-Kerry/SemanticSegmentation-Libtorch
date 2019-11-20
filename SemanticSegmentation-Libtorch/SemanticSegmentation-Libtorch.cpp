@@ -3,7 +3,7 @@
 #include "models/segmentation/SegmentationModel.h"
 
 torch::DeviceType device_type;
-const int64_t kTrainBatchSize = 4;
+const int64_t kTrainBatchSize = 2;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
 {
@@ -125,18 +125,16 @@ int main()
 	}
 #endif
 
-	auto train_dataset = COCODataSet("annotations/instances_train2017.json", "D:/GIT/pytorch-cpp/COCOImage/instances_train2017", false)
+	auto train_dataset = COCODataSet("annotations/instances_val2017.json", "D:/GIT/pytorch-cpp/COCOImage/val2017", false)
 		.map(torch::data::transforms::Stack<>());
 	const size_t train_dataset_size = train_dataset.size().value();
-	
-	std::cout << train_dataset_size;
 	
 	auto train_loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(train_dataset),
 		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(0));
 	
-	//for (const auto& batch : *train_loader)
-	//{
-	//	std::cout << batch.data.sizes() << " " << batch.target.sizes() << std::endl;
-	//}
+	for (const auto& batch : *train_loader)
+	{
+		std::cout << batch.data.sizes() << " " << batch.target.sizes() << std::endl;
+	}
 
 }
