@@ -99,12 +99,12 @@
     <ClCompile Include="cocoapi\mask_api.cpp" />
     <ClCompile Include="DataSet\COCODataSet.cpp" />
     <ClCompile Include="DataSet\COCODetection.cpp" />
-    <ClCompile Include="DataSet\SegmentationMask.cpp" />
     <ClCompile Include="models\IntermediateLayerGetter.cpp" />
     <ClCompile Include="models\resnet.cpp" />
     <ClCompile Include="models\segmentation\DeeplabV3.cpp" />
     <ClCompile Include="models\segmentation\SegmentationModel.cpp" />
     <ClCompile Include="SemanticSegmentation-Libtorch.cpp" />
+    <ClCompile Include="utills\metric_logger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cocoapi\cocoNote.h" />
@@ -112,11 +112,11 @@
     <ClInclude Include="cocoapi\mask_api.h" />
     <ClInclude Include="DataSet\COCODataSet.h" />
     <ClInclude Include="DataSet\COCODetection.h" />
-    <ClInclude Include="DataSet\SegmentationMask.h" />
     <ClInclude Include="models\IntermediateLayerGetter.h" />
     <ClInclude Include="models\resnet.h" />
     <ClInclude Include="models\segmentation\DeeplabV3.h" />
     <ClInclude Include="models\segmentation\SegmentationModel.h" />
+    <ClInclude Include="utills\metric_logger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

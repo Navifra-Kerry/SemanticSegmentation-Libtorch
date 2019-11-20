@@ -6,21 +6,39 @@ bool has_valid_annotation(std::vector<Annotation> anno)
 	if (anno.size() == 0)
 		return false;
 
-	return true;
+	int64_t sum = 0;
+	for (auto ann = anno.begin(); ann != anno.end(); ann++)
+		sum += ann->_area;
+
+	return sum > 1000;
 }
 
-COCODataSet::COCODataSet(std::string annFile, std::string root, bool remove_images_without_annotations)
-	:_coco_detection(root, annFile)
+COCODataSet::COCODataSet(std::string annFile, std::string root, bool remove_images_without_annotations,
+	std::vector<int> cat_list)
+	:_coco_detection(root, annFile), _cat_list(cat_list)
 {
 	std::sort(_coco_detection._ids.begin(), _coco_detection._ids.end());
 
-	//if (remove_images_without_annotations)
+	if (remove_images_without_annotations)
 	{
 		std::vector<int> ids;
 		for (auto& i : _coco_detection._ids)
 		{
 			auto ann_ids = _coco_detection._coco.GetAnnIds(std::vector<int> {i});
 			std::vector<Annotation> anno = _coco_detection._coco.LoadAnns(ann_ids);
+
+			for (auto ann = anno.begin(); ann != anno.end();)
+			{
+				if (std::find(cat_list.begin(), cat_list.end(), ann->_category_id) == cat_list.end())
+				{
+					anno.erase(ann);
+				}
+				else
+				{
+					ann++;
+				}
+			}
+
 			if (has_valid_annotation(anno))
 				ids.push_back(i);
 		}
@@ -48,11 +66,16 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	
 	//Anatation 가져오기
 	std::vector<Annotation> anno = coco_data.target;
-	for (auto ann = anno.begin(); ann != anno.end();) {
-		if (ann->_iscrowd)
+	for (auto ann = anno.begin(); ann != anno.end();) 
+	{
+		if (std::find(_cat_list.begin(), _cat_list.end(), ann->_category_id) == _cat_list.end())
+		{
 			anno.erase(ann);
+		}
 		else
+		{
 			ann++;
+		}
 	}
 
 	//Mask Polygon 과 카테고리 가져 오기
@@ -100,10 +123,8 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	std::tie(target,_)= torch::max(mask_tensor, 0);
 
 	///transform 구현 해야함 임시
-	target = target.resize_({520 , 520});
-	img_tensor = img_tensor.resize_({ 3,520,520 });
-
-	std::cout << target.sizes() << " " << img_tensor.sizes() << std::endl;
+	target = target.resize_({ 224 , 224});
+	img_tensor = img_tensor.resize_({ 3,224,224 });
 
 	return { img_tensor.clone(), target.clone() };
 }

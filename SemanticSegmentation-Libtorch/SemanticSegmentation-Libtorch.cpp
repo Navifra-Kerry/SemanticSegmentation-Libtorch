@@ -3,7 +3,7 @@
 #include "models/segmentation/SegmentationModel.h"
 
 torch::DeviceType device_type;
-const int64_t kTrainBatchSize = 2;
+const int64_t kTrainBatchSize = 8;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
 {
@@ -34,12 +34,17 @@ int main()
 	torch::Device device(device_type);
 
 	SegmentationModel segnet;
-	segnet->deeplabv3_resnet101();
+	segnet->deeplabv3_resnet101(false,3);
 
-	torch::load(segnet, "deeplabv3_resnet101.pt");
+	//torch::load(segnet, "deeplabv3_resnet101.pt");
 
 	segnet->eval();
 	segnet->to(device);
+
+	for (auto param : segnet->named_parameters())
+	{
+		std::cout << param.key() << std::endl;
+	}
 
 #ifdef NET_TEST
 	for (auto param : segnet->named_parameters())
@@ -125,16 +130,24 @@ int main()
 	}
 #endif
 
-	auto train_dataset = COCODataSet("annotations/instances_val2017.json", "D:/GIT/pytorch-cpp/COCOImage/val2017", false)
+	auto train_dataset = COCODataSet("annotations/instances_val2017.json", "D:/GIT/pytorch-cpp/COCOImage/val2017", true, {0,17,18})
 		.map(torch::data::transforms::Stack<>());
 	const size_t train_dataset_size = train_dataset.size().value();
 	
 	auto train_loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(train_dataset),
 		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(0));
+
+	std::cout << train_dataset_size << std::endl;
 	
 	for (const auto& batch : *train_loader)
 	{
-		std::cout << batch.data.sizes() << " " << batch.target.sizes() << std::endl;
+		auto data = batch.data;
+
+		data = data.to(torch::kF32);
+		data = data.to(device_type);
+
+		auto output = segnet->forward(data);
+
 	}
 
 }

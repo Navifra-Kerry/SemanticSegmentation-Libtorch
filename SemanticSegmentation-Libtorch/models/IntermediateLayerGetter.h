@@ -6,13 +6,13 @@ class IntermediateLayerGetterImpl : public torch::nn::Module
 {
 public:
 
-	template <typename Net>
+	template<typename Net>
 	IntermediateLayerGetterImpl(Net  Module, std::vector<std::string> return_layers)
 	{
-		//this->to(Module->b);
-
 		for (auto children : Module->named_children())
 		{
+			if (children.key() == "fc") continue;
+		
 			_module.insert(children.key(), std::move(children.value()));
 			register_module(children.key(), _module[children.key()]);
 		}

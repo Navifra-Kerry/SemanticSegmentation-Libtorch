@@ -1,5 +1,6 @@
 #include "SegmentationModel.h"
 #include "DeeplabV3.h"
+#include "../resnet.h"
 
 SegmentationModelImpl::SegmentationModelImpl()
 {
@@ -21,7 +22,11 @@ void SegmentationModelImpl::fcn_resnet50(bool pretrained, int64_t num_classes, b
 		aux_classifier_ = _make_FCNHead(1024, num_classes);
 	}
 
-	//backbone_ = ResNet(ResNetImpl::Architecture::ResNet50);
+	ResNet50 Resnet;
+
+	torch::load(Resnet, "resnet50_Python.pt");
+
+	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
 
 	register_module("backbone", backbone_);
 	register_module("classifier", classifier_);
@@ -37,7 +42,11 @@ void SegmentationModelImpl::fcn_resnet101(bool pretrained, int64_t num_classes, 
 		aux_classifier_ = _make_FCNHead(1024, num_classes);
 	}
 
-	//backbone_ = ResNet(ResNetImpl::Architecture::ResNet101);
+	ResNet101 Resnet;
+
+	torch::load(Resnet, "resnet101_Python.pt");
+
+	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
 
 	register_module("backbone", backbone_);
 	register_module("classifier", classifier_);
@@ -65,7 +74,11 @@ void SegmentationModelImpl::deeplabv3_resnet101(bool pretrained, int64_t num_cla
 		aux_classifier_ = _make_FCNHead(1024, num_classes);
 	}
 
-	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(ResNet(ResNetImpl::Architecture::ResNet101), {"layer3","layer4"}));
+	ResNet101 Resnet;	
+
+	torch::load(Resnet, "resnet101_Python.pt");
+
+	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), {"layer3","layer4"}));
 
 	register_module("backbone", backbone_);
 	register_module("classifier", classifier_);
@@ -94,7 +107,11 @@ void SegmentationModelImpl::deeplabv3_resnet50(bool pretrained, int64_t num_clas
 		aux_classifier_ = _make_FCNHead(1024, num_classes);
 	}
 
-	//backbone_ = ResNet(ResNetImpl::Architecture::ResNet50);
+	ResNet50 Resnet;
+
+	torch::load(Resnet, "resnet50_Python.pt");
+
+	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
 
 	register_module("backbone", backbone_);
 	register_module("classifier", classifier_);
