@@ -24,4 +24,5 @@ public:
 
 	rcnn::data::COCODetection _coco_detection;
 	std::vector<int> _cat_list;
+	std::map<int, int> _cat_idx;
 };

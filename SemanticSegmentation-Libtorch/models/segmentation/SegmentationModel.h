@@ -20,12 +20,10 @@ public:
 	std::unordered_map<std::string, torch::Tensor> forward(torch::Tensor x);
 	IntermediateLayerGetter backbone_{ nullptr };
 
-private:
-	
+
 	torch::nn::Sequential classifier_{ nullptr };
 	torch::nn::Sequential aux_classifier_{ nullptr };
 	torch::nn::Sequential _make_FCNHead(int64_t in_channels, int64_t channels);
-
 	bool aux_;
 };
 

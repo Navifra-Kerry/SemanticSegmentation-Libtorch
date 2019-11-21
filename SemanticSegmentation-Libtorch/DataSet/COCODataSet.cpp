@@ -17,6 +17,12 @@ COCODataSet::COCODataSet(std::string annFile, std::string root, bool remove_imag
 	std::vector<int> cat_list)
 	:_coco_detection(root, annFile), _cat_list(cat_list)
 {
+	int i = 0;
+	for (int i = 0; i < _cat_list.size(); i++)
+	{
+		_cat_idx.insert(std::make_pair(_cat_list[i], i));
+	}
+
 	std::sort(_coco_detection._ids.begin(), _coco_detection._ids.end());
 
 	if (remove_images_without_annotations)
@@ -84,7 +90,7 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	for (auto& obj : anno)
 	{
 		polys.push_back(obj._segmentation);
-		cats.push_back(obj._category_id);
+		cats.push_back(_cat_idx[obj._category_id]);
 	}
 
 	std::vector<torch::Tensor>  mask_tensors;
@@ -123,7 +129,7 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	std::tie(target,_)= torch::max(mask_tensor, 0);
 
 	///transform 구현 해야함 임시
-	target = target.resize_({ 224 , 224});
+	target = target.resize_({ 224 , 224 });
 	img_tensor = img_tensor.resize_({ 3,224,224 });
 
 	return { img_tensor.clone(), target.clone() };
