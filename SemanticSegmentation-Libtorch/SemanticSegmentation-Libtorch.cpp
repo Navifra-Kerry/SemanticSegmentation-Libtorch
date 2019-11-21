@@ -5,7 +5,7 @@
 #include <chrono>
 
 torch::DeviceType device_type;
-const int64_t kTrainBatchSize = 2;
+const int64_t kTrainBatchSize = 4;
 using namespace std;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
@@ -114,12 +114,11 @@ int main()
 	int days, hours, minutes;
 	auto end = chrono::system_clock::now();
 
-	int checkpoint_period = 2500;
+	int checkpoint_period = 500;
 
 	for (int i = 0; i < max_iter; i++)
 	{
 		data_time = chrono::system_clock::now() - end;
-		iteration += 1;
 
 		for (const auto& batch : *train_loader)
 		{
@@ -144,26 +143,26 @@ int main()
 
 			loss.backward();
 			optimizer.step();
+
+			batch_time = std::chrono::system_clock::now() - end;
+			end = std::chrono::system_clock::now();
+			meters.update(std::map<string, float>{ {"time", static_cast<float>(batch_time.count())}, { "data", static_cast<float>(data_time.count()) }});
+			eta_seconds = meters["time"].global_avg() * (max_iter - iteration);
+			days = eta_seconds / 60 / 60 / 24;
+			hours = eta_seconds / 60 / 60 - days * 24;
+			minutes = eta_seconds / 60 - hours * 60 - days * 24 * 60;
+			eta_string = to_string(days) + " day " + to_string(hours) + " h " + to_string(minutes) + " m";
+			if (iteration % 20 == 0 || iteration == max_iter) {
+				std::cout << "eta: " << eta_string << meters.delimiter_ << "iter: " << iteration << meters.delimiter_ << meters << meters.delimiter_ << meters.delimiter_;
+			}
 	
 		}
 
-		batch_time = std::chrono::system_clock::now() - end;
-		end = std::chrono::system_clock::now();
-		meters.update(std::map<string, float>{ {"time", static_cast<float>(batch_time.count())}, { "data", static_cast<float>(data_time.count()) }});
-		eta_seconds = meters["time"].global_avg() * (max_iter - iteration);
-		days = eta_seconds / 60 / 60 / 24;
-		hours = eta_seconds / 60 / 60 - days * 24;
-		minutes = eta_seconds / 60 - hours * 60 - days * 24 * 60;
-		eta_string = to_string(days) + " day " + to_string(hours) + " h " + to_string(minutes) + " m";
-		if (iteration % 20 == 0 || iteration == max_iter) {
-			std::cout << "eta: " << eta_string << meters.delimiter_ << "iter: " << iteration << meters.delimiter_ << meters << meters.delimiter_ << meters.delimiter_;
-		}
-
-		if (iteration % checkpoint_period == 0)
-			torch::save(segnet, "model_" + to_string(iteration) + ".pt");
-		if (iteration == max_iter)
-			torch::save(segnet, "model_final.pth");
+		torch::save(segnet, "model_" + to_string(i) + ".pt");
 	}
+
+
+	torch::save(segnet, "model_final.pt");
 
 	chrono::duration<double> total_training_time = chrono::system_clock::now() - start_training_time;
 	days = total_training_time.count() / 60 / 60 / 24;
