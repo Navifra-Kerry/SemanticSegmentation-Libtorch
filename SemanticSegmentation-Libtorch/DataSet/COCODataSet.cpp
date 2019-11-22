@@ -1,5 +1,6 @@
 #include "cocoDataSet.h"
 #include "../cocoapi/mask.h"
+#include "../utills/transforms.h"
 
 bool has_valid_annotation(std::vector<Annotation> anno) 
 {
@@ -66,9 +67,6 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 {
 	auto coco_data = _coco_detection.get(idx);
 	cv::Mat img = coco_data.data;
-
-	torch::Tensor img_tensor = torch::from_blob(img.data, { img.rows, img.cols, 3 }, torch::kByte);
-	img_tensor = img_tensor.permute({ 2, 0, 1 });
 	
 	//Anatation 가져오기
 	std::vector<Annotation> anno = coco_data.target;
@@ -95,16 +93,25 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 
 	std::vector<torch::Tensor>  mask_tensors;
 
+	//임시
+	int base_size = 520;
+
 	//Polygon To Mask Tensors
 	for (int k= 0; k< polys.size(); k++)
 	{
-		auto frPoly = coco::frPoly(polys[k], img.rows, img.cols);
+		//왜 Polygon이 0이지?
+		if (polys[k].size() == 0) continue;
+
+		transforms::polygon::Resize(base_size/img.rows, base_size/img.cols, polys[k]);
+
+		//임시
+		auto frPoly = coco::frPoly(polys[k], base_size, base_size);
 
 		coco::RLEs Rs(1);
 
 		coco::rleFrString(Rs._R, (char*)frPoly[0].counts.c_str(), std::get<0>(frPoly[0].size), std::get<1>(frPoly[0].size));
 		coco::siz h = Rs._R[0].h, w = Rs._R[0].w, n = Rs._n;
-		coco::Masks masks = coco::Masks(img.cols, img.rows, 1);
+		coco::Masks masks = coco::Masks(base_size, base_size, 1);
 
 		coco::rleDecode(Rs._R, masks._mask, n);
 
@@ -129,8 +136,13 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	std::tie(target,_)= torch::max(mask_tensor, 0);
 
 	///transform 구현 해야함 임시
-	target = target.resize_({ 224 , 224 });
-	img_tensor = img_tensor.resize_({ 3,224,224 });
+
+	cv::resize(img, img, cv::Size(base_size, base_size));
+	torch::Tensor img_tensor = torch::from_blob(img.data, { img.rows, img.cols, 3 }, torch::kByte);
+	img_tensor = img_tensor.permute({ 2, 0, 1 });
+
+	//target = target.resize_({ 224 , 224 });
+	//img_tensor = img_tensor.resize_({ 3,224,224 });
 
 	return { img_tensor.clone(), target.clone() };
 }
