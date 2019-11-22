@@ -62,7 +62,7 @@ void training()
 
 	segnet->train();
 	segnet->to(device);
-	segnet->aux_ = true;
+	//segnet->aux_ = true;
 
 	auto train_dataset = COCODataSet("annotations/instances_train2017.json", "D:/GIT/pytorch-cpp/COCOImage/train2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
@@ -74,6 +74,7 @@ void training()
 	std::cout << train_dataset_size << std::endl;
 
 	std::vector<torch::Tensor> trainable_params;
+
 
 	auto params = segnet->classifier_->named_parameters(true /*recurse*/);
 	for (auto& param : params)
@@ -95,6 +96,12 @@ void training()
 		{
 			trainable_params.push_back(param.value());
 		}
+	}
+
+	params = segnet->backbone_->named_parameters(true /*recurse*/);
+	for (auto& param : params)
+	{
+		param.value().set_requires_grad(false);
 	}
 
 	//::optim::Adam optimizer(trainable_params, torch::optim::AdamOptions(1e-3 /*learning rate*/));
@@ -184,9 +191,11 @@ void inference()
 	SegmentationModel segnet;
 	segnet->deeplabv3_resnet101(false, 3);
 
+	torch::load(segnet, "model_final.pt");
+
 	segnet->train();
 	segnet->to(device);
-	segnet->aux_ = true;
+	//segnet->aux_ = true;
 
 	std::vector<cv::Scalar> colomap;
 	genarateColormap(colomap, 3);
