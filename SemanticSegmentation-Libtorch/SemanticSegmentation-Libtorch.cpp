@@ -5,7 +5,7 @@
 #include <chrono>
 
 torch::DeviceType device_type;
-const int64_t kTrainBatchSize = 6;
+const int64_t kTrainBatchSize = 8;
 using namespace std;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
@@ -97,7 +97,8 @@ void training()
 		}
 	}
 
-	torch::optim::Adam optimizer(trainable_params, torch::optim::AdamOptions(1e-3 /*learning rate*/));
+	//::optim::Adam optimizer(trainable_params, torch::optim::AdamOptions(1e-3 /*learning rate*/));
+	torch::optim::SGD optimizer(trainable_params, torch::optim::SGDOptions(0.01 /*learning rate*/).momentum(0.9).weight_decay(1e-4));
 
 	std::map<std::string, torch::Tensor> loss_map;
 	std::chrono::duration<double> data_time, batch_time;
