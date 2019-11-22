@@ -102,7 +102,7 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 		//왜 Polygon이 0이지?
 		if (polys[k].size() == 0) continue;
 
-		transforms::polygon::Resize(base_size/img.rows, base_size/img.cols, polys[k]);
+		transforms::polygon::Resize((double)base_size/(double)img.cols, (double)base_size/ (double)img.rows, polys[k]);
 
 		//임시
 		auto frPoly = coco::frPoly(polys[k], base_size, base_size);
@@ -141,8 +141,31 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	torch::Tensor img_tensor = torch::from_blob(img.data, { img.rows, img.cols, 3 }, torch::kByte);
 	img_tensor = img_tensor.permute({ 2, 0, 1 });
 
-	//target = target.resize_({ 224 , 224 });
-	//img_tensor = img_tensor.resize_({ 3,224,224 });
+	cv::Mat bin_mask = cv::Mat::eye(target.size(0), target.size(1), CV_8UC1);
+	target = target.clamp(0, 255).to(torch::kU8);
+	target = target.to(torch::kCPU);
+	std::memcpy(bin_mask.data, target.data_ptr(), sizeof(torch::kU8) * target.numel());
+
+	uchar* data_ptr = (uchar*)bin_mask.data;
+
+	for (int y = 0; y < bin_mask.rows; y++)
+	{
+		for (int x = 0; x < bin_mask.cols; x++)
+		{
+			if (data_ptr[y * bin_mask.cols + x] == 0)
+			{
+				continue;
+			}
+			else
+			{
+				data_ptr[y * bin_mask.cols + x]  = 255;
+			}
+		}
+	}
+
+	cv::imshow("Image", bin_mask);
+	cv::imshow("Image2", img);
+	cv::waitKey(0);
 
 	return { img_tensor.clone(), target.clone() };
 }
