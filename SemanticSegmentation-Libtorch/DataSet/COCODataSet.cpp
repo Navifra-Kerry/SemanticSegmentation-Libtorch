@@ -94,15 +94,14 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	std::vector<torch::Tensor>  mask_tensors;
 
 	//임시
-	int base_size = 520;
+	int base_size = 480;
 
 	//Polygon To Mask Tensors
 	for (int k= 0; k< polys.size(); k++)
 	{
 		//왜 Polygon이 0이지?
 		if (polys[k].size() == 0) continue;
-
-		transforms::polygon::Resize((double)base_size/(double)img.cols, (double)base_size/ (double)img.rows, polys[k]);
+		transforms::polygon::Resize((double)base_size / (double)img.cols, (double)base_size / (double)img.rows, polys[k]);
 
 		//임시
 		auto frPoly = coco::frPoly(polys[k], base_size, base_size);
@@ -133,13 +132,16 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 
 	//Mask에 Category mapping
 	torch::Tensor target, _;
-	std::tie(target,_)= torch::max(mask_tensor, 0);
-
+	std::tie(target, _) = torch::max(mask_tensor, 0);
+	
 	///transform 구현 해야함 임시
-
 	cv::resize(img, img, cv::Size(base_size, base_size));
 	torch::Tensor img_tensor = torch::from_blob(img.data, { img.rows, img.cols, 3 }, torch::kByte);
 	img_tensor = img_tensor.permute({ 2, 0, 1 });
+
+#if 0 // Debug Data Inputs
+	std::cout << img_tensor.sizes() << std::endl;
+	std::cout << target.sizes() << std::endl;
 
 	cv::Mat bin_mask = cv::Mat::eye(target.size(0), target.size(1), CV_8UC1);
 	target = target.clamp(0, 255).to(torch::kU8);
@@ -166,6 +168,7 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	cv::imshow("Image", bin_mask);
 	cv::imshow("Image2", img);
 	cv::waitKey(0);
+#endif
 
 	return { img_tensor.clone(), target.clone() };
 }

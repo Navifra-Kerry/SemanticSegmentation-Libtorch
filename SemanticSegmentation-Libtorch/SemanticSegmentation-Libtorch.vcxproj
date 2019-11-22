@@ -105,6 +105,7 @@
     <ClCompile Include="models\segmentation\SegmentationModel.cpp" />
     <ClCompile Include="SemanticSegmentation-Libtorch.cpp" />
     <ClCompile Include="utills\metric_logger.cpp" />
+    <ClCompile Include="utills\transforms.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cocoapi\cocoNote.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="models\segmentation\DeeplabV3.h" />
     <ClInclude Include="models\segmentation\SegmentationModel.h" />
     <ClInclude Include="utills\metric_logger.h" />
+    <ClInclude Include="utills\transforms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

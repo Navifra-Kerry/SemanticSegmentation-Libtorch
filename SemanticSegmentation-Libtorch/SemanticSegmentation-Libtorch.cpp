@@ -5,7 +5,7 @@
 #include <chrono>
 
 torch::DeviceType device_type;
-const int64_t kTrainBatchSize = 4;
+const int64_t kTrainBatchSize = 6;
 using namespace std;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
@@ -64,7 +64,7 @@ void training()
 	segnet->to(device);
 	segnet->aux_ = true;
 
-	auto train_dataset = COCODataSet("annotations/instances_val2017.json", "D:/GIT/pytorch-cpp/COCOImage/val2017", true, { 0,17,18 })
+	auto train_dataset = COCODataSet("annotations/instances_train2017.json", "D:/GIT/pytorch-cpp/COCOImage/train2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t train_dataset_size = train_dataset.size().value();
 

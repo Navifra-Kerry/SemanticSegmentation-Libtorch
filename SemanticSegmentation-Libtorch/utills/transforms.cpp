@@ -12,11 +12,8 @@ void Resize(double scaleX, double scaleY, std::vector<std::vector<double>>& poly
 		for (j = 0; j < polygon[idx].size() / 2; j++) x += (xy[j * 2 + 0]);
 		for (j = 0; j < polygon[idx].size() / 2; j++) y += (xy[j * 2 + 1]);
 
-		x /= polygon[idx].size() / 2;
-		y /= polygon[idx].size() / 2;
-
-		for (j = 0; j < polygon[idx].size() / 2; j++) xy[j * 2 + 0] = ((xy[j * 2 + 0] - x) * scaleX) + x;
-		for (j = 0; j < polygon[idx].size() / 2; j++) xy[j * 2 + 1] = ((xy[j * 2 + 1] - y) * scaleY) + y;
+		for (j = 0; j < polygon[idx].size() / 2; j++) xy[j * 2 + 0] = (xy[j * 2 + 0] * scaleX);
+		for (j = 0; j < polygon[idx].size() / 2; j++) xy[j * 2 + 1] = (xy[j * 2 + 1] * scaleY);
 	}
 }
 }//transforms
