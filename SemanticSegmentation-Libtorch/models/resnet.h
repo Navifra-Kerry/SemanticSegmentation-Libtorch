@@ -12,7 +12,8 @@ namespace _resnetimpl {
 		int64_t in,
 		int64_t out,
 		int64_t stride = 1,
-		int64_t groups = 1);
+		int64_t groups = 1,
+		int64_t dilation = 1);
 
 	// 1x1 convolution
 	torch::nn::Conv2d conv1x1(int64_t in, int64_t out, int64_t stride = 1);
@@ -35,7 +36,8 @@ namespace _resnetimpl {
 			int64_t stride = 1,
 			torch::nn::Sequential downsample = nullptr,
 			int64_t groups = 1,
-			int64_t base_width = 64);
+			int64_t base_width = 64,
+			int diation = 1);
 
 		torch::Tensor forward(torch::Tensor x);
 	};
@@ -58,7 +60,8 @@ namespace _resnetimpl {
 			int64_t stride = 1,
 			torch::nn::Sequential downsample = nullptr,
 			int64_t groups = 1,
-			int64_t base_width = 64);
+			int64_t base_width = 64,
+			int64_t dilation = 1);
 
 		torch::Tensor forward(torch::Tensor X);
 	};
@@ -67,6 +70,7 @@ namespace _resnetimpl {
 template <typename Block>
 struct ResNetImpl : torch::nn::Module {
 	int64_t groups, base_width, inplanes;
+	int64_t _dilation;
 	torch::nn::Conv2d conv1;
 	torch::nn::BatchNorm bn1;
 	torch::nn::Functional max_pool1;
@@ -74,10 +78,12 @@ struct ResNetImpl : torch::nn::Module {
 	torch::nn::Sequential layer1, layer2, layer3, layer4;
 	bool hookfeature;
 
+
 	torch::nn::Sequential _make_layer(
 		int64_t planes,
 		int64_t blocks,
-		int64_t stride = 1);
+		int64_t stride = 1,
+		bool dilate = false);
 
 	ResNetImpl(
 		const std::vector<int>& layers,
@@ -92,7 +98,18 @@ template <typename Block>
 torch::nn::Sequential ResNetImpl<Block>::_make_layer(
 	int64_t planes,
 	int64_t blocks,
-	int64_t stride) {
+	int64_t stride,
+	bool dilate) 
+{
+	int64_t previous_dilation = _dilation;
+
+	if(dilate)
+	{
+		_dilation *= stride;
+		stride = 1;
+	}
+
+
 	torch::nn::Sequential downsample = nullptr;
 	if (stride != 1 || inplanes != planes * Block::expansion) {
 		downsample = torch::nn::Sequential(
@@ -102,12 +119,12 @@ torch::nn::Sequential ResNetImpl<Block>::_make_layer(
 
 	torch::nn::Sequential layers;
 	layers->push_back(
-		Block(inplanes, planes, stride, downsample, groups, base_width));
+		Block(inplanes, planes, stride, downsample, groups, base_width, previous_dilation));
 
 	inplanes = planes * Block::expansion;
 
 	for (int i = 1; i < blocks; ++i)
-		layers->push_back(Block(inplanes, planes, 1, nullptr, groups, base_width));
+		layers->push_back(Block(inplanes, planes, 1, nullptr, groups, base_width, previous_dilation));
 
 	return layers;
 }
@@ -127,10 +144,12 @@ ResNetImpl<Block>::ResNetImpl(
 	bn1(64),
 	layer1(_make_layer(64, layers[0])),
 	layer2(_make_layer(128, layers[1], 2)),
-	layer3(_make_layer(256, layers[2], 2)),
-	layer4(_make_layer(512, layers[3], 2)),
+	layer3(_make_layer(256, layers[2], 2,true)),
+	layer4(_make_layer(512, layers[3], 2, true)),
 	fc(512 * Block::expansion, num_classes),
 	max_pool1(torch::max_pool2d, 3, 2, 1, 1, false) {
+
+	_dilation = 1;
 
 	register_module("conv1", conv1);
 	register_module("bn1", bn1);

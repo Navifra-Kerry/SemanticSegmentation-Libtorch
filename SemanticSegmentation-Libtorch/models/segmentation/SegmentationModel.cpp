@@ -75,7 +75,6 @@ void SegmentationModelImpl::deeplabv3_resnet101(bool pretrained, int64_t num_cla
 	}
 
 	ResNet101 Resnet;	
-
 	torch::load(Resnet, "resnet101_Python.pt");
 
 	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), {"layer3","layer4"}));

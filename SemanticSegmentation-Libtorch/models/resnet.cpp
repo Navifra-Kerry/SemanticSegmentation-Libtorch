@@ -5,9 +5,10 @@ namespace _resnetimpl {
 		int64_t in,
 		int64_t out,
 		int64_t stride,
-		int64_t groups) {
+		int64_t groups,
+		int64_t dilation) {
 		torch::nn::Conv2dOptions O(in, out, 3);
-		O.padding(1).stride(stride).groups(groups).with_bias(false);
+		O.padding(1).stride(stride).groups(groups).with_bias(false).dilation(dilation);
 		return torch::nn::Conv2d(O);
 	}
 
@@ -26,10 +27,17 @@ namespace _resnetimpl {
 		int64_t stride,
 		torch::nn::Sequential downsample,
 		int64_t groups,
-		int64_t base_width)
+		int64_t base_width ,int diation)
 		: stride(stride), downsample(downsample) {
 		if (groups != 1 or base_width != 64) {
 			std::cerr << "BasicBlock only supports groups=1 and base_width=64"
+				<< std::endl;
+			assert(false);
+		}
+
+		if (diation != 1)
+		{
+			std::cerr << "Dilation > 1 not supported in BasicBlock"
 				<< std::endl;
 			assert(false);
 		}
@@ -57,13 +65,14 @@ namespace _resnetimpl {
 		int64_t stride,
 		torch::nn::Sequential downsample,
 		int64_t groups,
-		int64_t base_width)
+		int64_t base_width,
+		int64_t dilation)
 		: stride(stride), downsample(downsample) {
 		auto width = int64_t(planes * (base_width / 64.)) * groups;
 
 		// Both conv2 and downsample layers downsample the input when stride != 1
 		conv1 = conv1x1(inplanes, width);
-		conv2 = conv3x3(width, width, stride, groups);
+		conv2 = conv3x3(width, width, stride, groups, dilation);
 		conv3 = conv1x1(width, planes * expansion);
 
 		bn1 = torch::nn::BatchNorm(width);
