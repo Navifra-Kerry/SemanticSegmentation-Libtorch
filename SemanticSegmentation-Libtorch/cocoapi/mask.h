@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+//reference https://github.com/lsrock1/maskrcnn_benchmark.cpp.git
+
 namespace coco{
 struct RLEstr {
 	RLEstr(std::pair<coco::siz, coco::siz> size_, std::string counts_) : size(size_), counts(counts_) {};
