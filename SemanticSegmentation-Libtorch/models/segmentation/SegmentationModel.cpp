@@ -4,7 +4,7 @@
 
 SegmentationModelImpl::SegmentationModelImpl()
 {
-	aux_ = false;
+	_aux = false;
 }
 
 SegmentationModelImpl::~SegmentationModelImpl()
@@ -14,49 +14,49 @@ SegmentationModelImpl::~SegmentationModelImpl()
 
 void SegmentationModelImpl::fcn_resnet50(bool pretrained, int64_t num_classes, bool aux)
 {
-	classifier_ = _make_FCNHead(2048, num_classes);
+	_classifier = _make_FCNHead(2048, num_classes);
 
 	if (aux != false)
 	{
-		aux_ = aux;
-		aux_classifier_ = _make_FCNHead(1024, num_classes);
+		_aux = aux;
+		_aux_classifier = _make_FCNHead(1024, num_classes);
 	}
 
 	ResNet50 Resnet;
 
 	torch::load(Resnet, "resnet50_Python.pt");
 
-	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
+	_backbone = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
 
-	register_module("backbone", backbone_);
-	register_module("classifier", classifier_);
-	register_module("aux_classifier", aux_classifier_);
+	register_module("backbone", _backbone);
+	register_module("classifier", _classifier);
+	register_module("aux_classifier", _aux_classifier);
 }
 
 void SegmentationModelImpl::fcn_resnet101(bool pretrained, int64_t num_classes, bool aux)
 {
-	classifier_ = _make_FCNHead(2048, num_classes);
+	_classifier = _make_FCNHead(2048, num_classes);
 	if (aux != false)
 	{
-		aux_ = aux;
-		aux_classifier_ = _make_FCNHead(1024, num_classes);
+		_aux = aux;
+		_aux_classifier = _make_FCNHead(1024, num_classes);
 	}
 
 	ResNet101 Resnet;
 
 	torch::load(Resnet, "resnet101_Python.pt");
 
-	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
+	_backbone = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
 
-	register_module("backbone", backbone_);
-	register_module("classifier", classifier_);
-	register_module("aux_classifier", aux_classifier_);
+	register_module("backbone", _backbone);
+	register_module("classifier", _classifier);
+	register_module("aux_classifier", _aux_classifier);
 }
 
 void SegmentationModelImpl::deeplabv3_resnet101(bool pretrained, int64_t num_classes, bool aux)
 {
 	int64_t in_channels = 2048;
-	classifier_ = torch::nn::Sequential
+	_classifier = torch::nn::Sequential
 	(
 		ASPP(ASPPImpl(2048, { 12,24,36 })),
 		torch::nn::Conv2d(
@@ -70,25 +70,25 @@ void SegmentationModelImpl::deeplabv3_resnet101(bool pretrained, int64_t num_cla
 
 	if (aux != false)
 	{
-		aux_ = aux;
-		aux_classifier_ = _make_FCNHead(1024, num_classes);
+		_aux = aux;
+		_aux_classifier = _make_FCNHead(1024, num_classes);
 	}
 
 	ResNet101 Resnet;	
 	torch::load(Resnet, "resnet101_Python.pt");
 
-	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), {"layer3","layer4"}));
+	_backbone = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), {"layer3","layer4"}));
 
-	register_module("backbone", backbone_);
-	register_module("classifier", classifier_);
-	register_module("aux_classifier", aux_classifier_);
+	register_module("backbone", _backbone);
+	register_module("classifier", _classifier);
+	register_module("aux_classifier", _aux_classifier);
 }
 
 
 void SegmentationModelImpl::deeplabv3_resnet50(bool pretrained, int64_t num_classes, bool aux)
 {
 	int64_t in_channels = 2048;
-	classifier_ = torch::nn::Sequential
+	_classifier = torch::nn::Sequential
 	(
 		ASPP(ASPPImpl(2048, { 12,24,36 })),
 		torch::nn::Conv2d(
@@ -102,19 +102,19 @@ void SegmentationModelImpl::deeplabv3_resnet50(bool pretrained, int64_t num_clas
 
 	if (aux != false)
 	{
-		aux_ = aux;
-		aux_classifier_ = _make_FCNHead(1024, num_classes);
+		_aux = aux;
+		_aux_classifier = _make_FCNHead(1024, num_classes);
 	}
 
 	ResNet50 Resnet;
 
 	torch::load(Resnet, "resnet50_Python.pt");
 
-	backbone_ = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
+	_backbone = IntermediateLayerGetter(IntermediateLayerGetterImpl(std::move(Resnet), { "layer3","layer4" }));
 
-	register_module("backbone", backbone_);
-	register_module("classifier", classifier_);
-	register_module("aux_classifier", aux_classifier_);
+	register_module("backbone", _backbone);
+	register_module("classifier", _classifier);
+	register_module("aux_classifier", _aux_classifier);
 }
 
 torch::nn::Sequential SegmentationModelImpl::_make_FCNHead(int64_t in_channels, int64_t channels)
@@ -138,18 +138,18 @@ std::unordered_map<std::string, torch::Tensor> SegmentationModelImpl::forward(to
 
 	int64_t h = x.size(2), w = x.size(3);
 
-	auto feature = backbone_->forward(x);
+	auto feature = _backbone->forward(x);
 
 	x = feature[1];
 
-	x = classifier_->forward(x);
+	x = _classifier->forward(x);
 	x = torch::upsample_bilinear2d(x, { h,w }, false);
 	result.insert(std::make_pair("out", x));
 
-	if (aux_ == true)
+	if (_aux == true)
 	{
 		x = feature[0];
-		x = aux_classifier_->forward(x);
+		x = _aux_classifier->forward(x);
 		x = torch::upsample_bilinear2d(x, { h,w }, false);
 		result.insert(std::make_pair("aux", x));
 	}
