@@ -121,13 +121,14 @@ COCONote::COCONote(){};
 COCONote::COCONote(const COCONote& other) 
 	:_anns(other._anns), _imgs(other._imgs), _cats(other._cats), _imgToAnns(other._imgToAnns), _catToImgs(other._catToImgs)
 {
-  //dataset.CopyFrom(other., dataset.GetAllocator());
+   _cocodataset = std::move(other._cocodataset);
 }
 
 COCONote::COCONote(COCONote&& other) 
 	:_anns(other._anns), _imgs(other._imgs), _cats(other._cats), _imgToAnns(other._imgToAnns), _catToImgs(other._catToImgs)
 {
-  //dataset.CopyFrom(other.dataset.Move(), dataset.GetAllocator());
+
+	_cocodataset = std::move(other._cocodataset);
 }
 
 COCONote COCONote::operator=(const COCONote& other)
@@ -138,7 +139,7 @@ COCONote COCONote::operator=(const COCONote& other)
     _imgToAnns = other._imgToAnns;
     _catToImgs = other._catToImgs;
     
-	//dataset.CopyFrom(other.dataset, dataset.GetAllocator());
+	_cocodataset = std::move(other._cocodataset);
   }
   return *this;
 }
@@ -150,7 +151,7 @@ COCONote COCONote::operator=(COCONote&& other)
     _imgs = other._imgs;
     _imgToAnns = other._imgToAnns;
     _catToImgs = other._catToImgs;
-    //dataset.CopyFrom(other.dataset.Move(), dataset.GetAllocator());
+	_cocodataset = std::move(other._cocodataset);
   }
   return *this;
 }
