@@ -5,7 +5,7 @@
 #include <chrono>
 
 torch::DeviceType device_type;
-const int64_t kTrainBatchSize = 8;
+const int64_t kTrainBatchSize = 4;
 using namespace std;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
@@ -42,6 +42,8 @@ torch::Tensor criterion(
 int max_iter = 30;
 
 void training()
+{
+try
 {
 	auto meters = MetricLogger(" ");
 	auto start_training_time = chrono::system_clock::now();
@@ -87,21 +89,24 @@ void training()
 		}
 	}
 
-	params = segnet->aux_classifier_->named_parameters(true /*recurse*/);
-	for (auto& param : params)
-	{
-		auto layer_name = param.key();
-
-		if (param.value().requires_grad())
-		{
-			trainable_params.push_back(param.value());
-		}
-	}
+	//params = segnet->aux_classifier_->named_parameters(true /*recurse*/);
+	//for (auto& param : params)
+	//{
+	//	auto layer_name = param.key();
+	//
+	//	if (param.value().requires_grad())
+	//	{
+	//		trainable_params.push_back(param.value());
+	//	}
+	//}
 
 	params = segnet->backbone_->named_parameters(true /*recurse*/);
 	for (auto& param : params)
 	{
-		param.value().set_requires_grad(false);
+		if (param.value().requires_grad())
+		{
+			trainable_params.push_back(param.value());
+		}
 	}
 
 	//::optim::Adam optimizer(trainable_params, torch::optim::AdamOptions(1e-3 /*learning rate*/));
@@ -162,7 +167,6 @@ void training()
 		torch::save(segnet, "model_" + to_string(i) + ".pt");
 	}
 
-
 	torch::save(segnet, "model_final.pt");
 
 	chrono::duration<double> total_training_time = chrono::system_clock::now() - start_training_time;
@@ -170,6 +174,12 @@ void training()
 	hours = total_training_time.count() / 60 / 60 - days * 24;
 	minutes = total_training_time.count() / 60 - hours * 60 - days * 24 * 60;
 	std::cout << "Total training time: " << to_string(days) + " day " + to_string(hours) + " h " + to_string(minutes) + " m" << " ( " << total_training_time.count() / max_iter << "s / it)";
+}
+catch (std::exception ex)
+{
+	std::cout << ex.what();
+}
+	
 }
 
 void inference()
@@ -191,7 +201,7 @@ void inference()
 	SegmentationModel segnet;
 	segnet->deeplabv3_resnet101(false, 3);
 
-	torch::load(segnet, "model_final.pt");
+	torch::load(segnet, "model_14.pt");
 
 	segnet->train();
 	segnet->to(device);
