@@ -1,9 +1,7 @@
 # LibTorch Example of SemanticSegmentation-Libtorch
 
 <p align="left">
-  <a href="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch
-"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch
-/workflows/Main%20workflow/badge.svg"></a>
+ <a href="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/workflows/Main%20workflow/badge.svg"></a>
 </p>
 
 # Example
