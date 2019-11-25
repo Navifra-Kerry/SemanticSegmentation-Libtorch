@@ -1,7 +1,8 @@
-# LibTorch Example of SemanticSegmentation-Libtorch
+# LibTorch Example of SemanticSegmentation
 
-# build state
-...
+<p align="left">
+ <a href="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/workflows/Main%20workflow/badge.svg"></a>
+</p>
 
 # Example
 
@@ -19,7 +20,7 @@
 Install with Scripts
 
 ```
-transfer-learning
+SemanticSegmentation-Libtorch
  - Scripts
     -install.bat
     
