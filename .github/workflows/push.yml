@@ -1,0 +1,21 @@
+name: Main workflow
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@master
+      
+      - name: Setup MSBuild.exe
+        uses: warrenbuckley/Setup-MSBuild@v1
+
+      #- name: Setup Dependency
+      #  working-directory: Scripts
+      #  run : powershell .\install.bat
+
+      #- name: build        
+      #  run : msbuild /p:Configuration=Release transfer-learning.sln
