@@ -25,15 +25,15 @@
     <Filter Include="models\segmentation">
       <UniqueIdentifier>{59d98bee-7623-421f-b380-d319064b1033}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utills">
+      <UniqueIdentifier>{38ce04fb-94f4-4ef7-a9b2-26c103ac498a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SemanticSegmentation-Libtorch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="cocoapi\mask.cpp">
-      <Filter>cocoAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="cocoapi\mask_api.cpp">
       <Filter>cocoAPI</Filter>
     </ClCompile>
     <ClCompile Include="cocoapi\cocoNote.cpp">
@@ -43,9 +43,6 @@
       <Filter>DataSet</Filter>
     </ClCompile>
     <ClCompile Include="DataSet\COCODetection.cpp">
-      <Filter>DataSet</Filter>
-    </ClCompile>
-    <ClCompile Include="DataSet\SegmentationMask.cpp">
       <Filter>DataSet</Filter>
     </ClCompile>
     <ClCompile Include="models\segmentation\DeeplabV3.cpp">
@@ -59,6 +56,15 @@
     </ClCompile>
     <ClCompile Include="models\resnet.cpp">
       <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="cocoapi\mask_api.cpp">
+      <Filter>cocoAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="utills\metric_logger.cpp">
+      <Filter>utills</Filter>
+    </ClCompile>
+    <ClCompile Include="utills\transforms.cpp">
+      <Filter>utills</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,9 +83,6 @@
     <ClInclude Include="DataSet\COCODetection.h">
       <Filter>DataSet</Filter>
     </ClInclude>
-    <ClInclude Include="DataSet\SegmentationMask.h">
-      <Filter>DataSet</Filter>
-    </ClInclude>
     <ClInclude Include="models\segmentation\DeeplabV3.h">
       <Filter>models\segmentation</Filter>
     </ClInclude>
@@ -91,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="models\resnet.h">
       <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="utills\metric_logger.h">
+      <Filter>utills</Filter>
+    </ClInclude>
+    <ClInclude Include="utills\transforms.h">
+      <Filter>utills</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
