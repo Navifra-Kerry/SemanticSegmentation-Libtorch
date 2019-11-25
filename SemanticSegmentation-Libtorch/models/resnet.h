@@ -16,7 +16,10 @@ namespace _resnetimpl {
 		int64_t dilation = 1);
 
 	// 1x1 convolution
-	torch::nn::Conv2d conv1x1(int64_t in, int64_t out, int64_t stride = 1);
+	torch::nn::Conv2d conv1x1(
+		int64_t in, 
+		int64_t out, 
+		int64_t stride = 1);
 
 	struct BasicBlock : torch::nn::Module {
 		template <typename Block>
@@ -103,6 +106,7 @@ torch::nn::Sequential ResNetImpl<Block>::_make_layer(
 {
 	int64_t previous_dilation = _dilation;
 
+
 	if(dilate)
 	{
 		_dilation *= stride;
@@ -124,7 +128,7 @@ torch::nn::Sequential ResNetImpl<Block>::_make_layer(
 	inplanes = planes * Block::expansion;
 
 	for (int i = 1; i < blocks; ++i)
-		layers->push_back(Block(inplanes, planes, 1, nullptr, groups, base_width, previous_dilation));
+		layers->push_back(Block(inplanes, planes, 1, nullptr, groups, base_width, _dilation));
 
 	return layers;
 }
@@ -140,16 +144,17 @@ ResNetImpl<Block>::ResNetImpl(
 	base_width(width_per_group),
 	inplanes(64),
 	conv1(torch::nn::Conv2dOptions(3, 64, 7).stride(2).padding(3).with_bias(
-		false)),
+		false).dilation(1)),
 	bn1(64),
-	layer1(_make_layer(64, layers[0])),
-	layer2(_make_layer(128, layers[1], 2)),
-	layer3(_make_layer(256, layers[2], 2,true)),
-	layer4(_make_layer(512, layers[3], 2, true)),
 	fc(512 * Block::expansion, num_classes),
 	max_pool1(torch::max_pool2d, 3, 2, 1, 1, false) {
 
 	_dilation = 1;
+
+	layer1 = _make_layer(64, layers[0]);
+	layer2 = _make_layer(128, layers[1], 2);
+	layer3 = _make_layer(256, layers[2], 2, true);
+	layer4 = _make_layer(512, layers[3], 2, true);
 
 	register_module("conv1", conv1);
 	register_module("bn1", bn1);

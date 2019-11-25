@@ -8,7 +8,7 @@ namespace _resnetimpl {
 		int64_t groups,
 		int64_t dilation) {
 		torch::nn::Conv2dOptions O(in, out, 3);
-		O.padding(1).stride(stride).groups(groups).with_bias(false).dilation(dilation);
+		O.padding(dilation).stride(stride).groups(groups).with_bias(false).dilation(dilation);
 		return torch::nn::Conv2d(O);
 	}
 
