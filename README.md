@@ -19,7 +19,7 @@
 Install with Scripts
 
 ```
-transfer-learning
+SemanticSegmentation-Libtorch
  - Scripts
     -install.bat
     
