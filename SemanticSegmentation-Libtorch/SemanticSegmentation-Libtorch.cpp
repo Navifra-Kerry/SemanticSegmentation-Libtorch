@@ -78,7 +78,7 @@ try
 	std::vector<torch::Tensor> trainable_params;
 
 
-	auto params = segnet->classifier_->named_parameters(true /*recurse*/);
+	auto params = segnet->_classifier->named_parameters(true /*recurse*/);
 	for (auto& param : params)
 	{
 		auto layer_name = param.key();
@@ -100,7 +100,7 @@ try
 	//	}
 	//}
 
-	params = segnet->backbone_->named_parameters(true /*recurse*/);
+	params = segnet->_backbone->named_parameters(true /*recurse*/);
 	for (auto& param : params)
 	{
 		if (param.value().requires_grad())
