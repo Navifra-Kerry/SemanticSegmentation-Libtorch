@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
 	{
 		inference();
 	}
-	else
+	else if(argc == 1)
 	{
 		training();
 	}
