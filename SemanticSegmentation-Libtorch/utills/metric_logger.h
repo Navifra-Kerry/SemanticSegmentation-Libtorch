@@ -5,6 +5,20 @@
 #include <torch/torch.h>
 
 
+class ConfusionMatrix
+{
+public:
+
+	ConfusionMatrix(int64_t cls, torch::Device deviece);
+	void update(torch::Tensor a, torch::Tensor b);
+	void reset();
+
+	std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>  compute() const;
+
+	int64_t _num_classes;
+	torch::Tensor _mat;
+	friend std::ostream& operator << (std::ostream& os, const ConfusionMatrix& confusion);
+};
 
 class SmoothedValue 
 {

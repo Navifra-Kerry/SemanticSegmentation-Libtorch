@@ -1,5 +1,55 @@
 #include "metric_logger.h"
 
+using namespace std;
+
+ConfusionMatrix::ConfusionMatrix(int64_t cls, torch::Device deviece)
+	: _num_classes(cls) 
+{
+	_mat = torch::zeros({ _num_classes,_num_classes },c10::TensorOptions().dtype(torch::kFloat64).device(deviece));
+}
+
+void ConfusionMatrix::update(torch::Tensor a, torch::Tensor b)
+{
+	torch::NoGradGuard;
+
+	return;
+	std::cout << a.sizes() << b.sizes();
+
+	auto inds = _num_classes * (a + b);
+
+	_mat += torch::bincount(inds, {}, std::pow(_num_classes, 2)).reshape({ _num_classes, _num_classes });
+}
+
+void ConfusionMatrix::reset()
+{
+	_mat.zero_();
+}
+
+std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> ConfusionMatrix::compute() const
+{
+	auto acc_global =  torch::diag(_mat).sum() / _mat.sum();
+	auto acc = torch::diag(_mat).sum() / _mat.sum(1);
+	auto iou = torch::diag(_mat) / (_mat.sum(1) + _mat.sum(0) - torch::diag(_mat));
+
+	return { acc_global ,acc ,iou};
+}
+
+std::ostream& operator << (std::ostream& os, const ConfusionMatrix& confusion)
+{
+	torch::Tensor acc_global, acc, iou;
+
+#if 0
+	std::tie(acc_global, acc, iou) = confusion.compute();
+
+	os <<"test " <<"global correct: " << acc_global.item<float>() * 100 << "mean IoU: " << iou.mean().item<float>();
+
+	os << "\n";
+#endif
+
+	os << " Not support";
+	return os;
+}
+
 void SmoothedValue::update(float value) 
 {
 	if (deque.size() < 21)
