@@ -23,7 +23,7 @@ void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
 
 int max_iter = 30;
 
-void training()
+void training(std::string data_dir)
 {
 try
 {
@@ -46,7 +46,7 @@ try
 	segnet->to(device);
 
 
-	auto val_dataset = COCODataSet("annotations/instances_val2017.json", "D:/GIT/pytorch-cpp/COCOImage/val2017", true, { 0,17,18 })
+	auto val_dataset = COCODataSet(data_dir + "annotations\\instances_val2017.json", data_dir + "val2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t va_dataset_size = val_dataset.size().value();
 
@@ -54,7 +54,7 @@ try
 		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(4));
 
 
-	auto train_dataset = COCODataSet("annotations/instances_train2017.json", "D:/GIT/pytorch-cpp/COCOImage/train2017", true, { 0,17,18 })
+	auto train_dataset = COCODataSet(data_dir + "annotations\\instances_train2017.json", data_dir + "train2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t train_dataset_size = train_dataset.size().value();
 
@@ -96,12 +96,6 @@ try
 	}
 
 	torch::save(segnet, "model_final.pt");
-
-	//chrono::duration<double> total_training_time = chrono::system_clock::now() - start_training_time;
-	//days = total_training_time.count() / 60 / 60 / 24;
-	//hours = total_training_time.count() / 60 / 60 - days * 24;
-	//minutes = total_training_time.count() / 60 - hours * 60 - days * 24 * 60;
-	//std::cout << "Total training time: " << to_string(days) + " day " + to_string(hours) + " h " + to_string(minutes) + " m" << " ( " << total_training_time.count() / max_iter << "s / it)";
 }
 catch (std::exception ex)
 {
@@ -110,7 +104,7 @@ catch (std::exception ex)
 	
 }
 
-void inference()
+void inference(std::string data_dir, std::string modelpath)
 {
 	if (torch::cuda::is_available()) {
 		std::cout << "CUDA available! Training on GPU." << std::endl;
@@ -126,16 +120,15 @@ void inference()
 	SegmentationModel segnet;
 	segnet->deeplabv3_resnet101(false, 3);
 
-	torch::load(segnet, "model_14.pt");
+	torch::load(segnet, modelpath);
 
 	segnet->train();
 	segnet->to(device);
-	//segnet->aux_ = true;
 
 	std::vector<cv::Scalar> colomap;
 	genarateColormap(colomap, 3);
 
-	cv::Mat image = cv::imread("000000093673.jpg", cv::IMREAD_COLOR);
+	cv::Mat image = cv::imread(data_dir, cv::IMREAD_COLOR);
 	cv::resize(image, image, cv::Size(693, 520));
 
 	cv::Mat rgb[3];
@@ -209,14 +202,44 @@ void inference()
 	cv::waitKey(0);
 }
 
+const cv::String keys =
+"{@train		 |		| train or inference}"
+"{@data_dir      |<none>| path to coco dataset root folder  example input D:\\COCOImage\\}"
+"{@mode_path     |<none>| Only Need inference}"
+"{help h usage ? |      | print this message   }";
+
+
 int main(int argc, char* argv[])
 {
-	if(argc == 1)
+	try
 	{
-		inference();
+		cv::CommandLineParser parser(argc, argv, keys);
+		parser.about("Libtorch Example");
+
+		if (parser.has("help") || argc == 1) {
+			parser.printMessage();
+			return 0;
+		}
+
+		std::string train = parser.get<cv::String>(0);
+		std::string data_dir = parser.get<cv::String>(1);	
+		std::string modelPath = parser.get<cv::String>(2);
+
+		if (train == "train")
+		{
+			training(data_dir);
+		}
+		else if(train == "inference")
+		{
+			inference(data_dir, modelPath);
+		}
+		else
+		{
+			std::cout << "Not Found Run Mode Input Mode is " + train;
+		}
 	}
-	else if(argc == 1)
+	catch (std::exception ex)
 	{
-		training();
+		std::cout << ex.what();
 	}
 }

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <ctime>
+#include <experimental/filesystem>
 
 using namespace Poco::JSON;
 
@@ -106,6 +107,12 @@ Categories::Categories(): _id(0), _name(""), _supercategory("")
 COCONote::COCONote(std::string annotation_file)
 {
   std::cout << "loading annotations into memory...\n";
+  if (!std::experimental::filesystem::exists(annotation_file))
+  {
+	  std::cout << "The annotation_file does not exist." << std::endl;
+	  std::cout << annotation_file << std::endl;
+	  quick_exit(1);
+  }
   time_t start = time(0);
   std::ifstream ifs(annotation_file);
   

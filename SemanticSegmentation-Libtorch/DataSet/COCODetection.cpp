@@ -20,6 +20,13 @@ namespace data {
 		std::string path(_coco.LoadImgs(std::vector<int>{img_id})[0]._file_name);
 		cv::Mat img = cv::imread(_root + "/" + path, cv::IMREAD_COLOR);
 
+		if (img.rows == 0)
+		{
+			std::cout << "The image does not exist." << std::endl;
+			std::cout << _root + "/" + path << std::endl;
+			quick_exit(1);
+		}
+
 
 		torch::data::Example<cv::Mat, std::vector<Annotation>> value{ img, target };
 		return value;
