@@ -29,7 +29,7 @@ It will download and install automatically.
 ```
 
 <p align="left">
-  <a href="https://github.com/kerry-Cho/transfer-learning"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/transfer-learning/blob/master/Images/Install.png"></a>
+  <a href="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/blob/master/Images/Install.png"></a>
 </p>
 
 # Convert Python Model to C++
