@@ -1,8 +1,6 @@
 ﻿#include <iostream>
-#include "DataSet/COCODataSet.h"
-#include "models/segmentation/SegmentationModel.h"
-#include "utills/metric_logger.h"
-#include <chrono>
+#include "training.h"
+
 
 torch::DeviceType device_type;
 const int64_t kTrainBatchSize = 4;
@@ -21,32 +19,14 @@ void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
 	}
 }
 
-torch::Tensor criterion(
-	std::unordered_map<std::string, torch::Tensor> inputs, torch::Tensor target)
-{
-	std::map<std::string, torch::Tensor> losses;
-	
-	for (auto loss : inputs)
-	{
-		losses[loss.first] = torch::nll_loss2d(torch::log_softmax(loss.second,1), target, {}, 1, 255);
-	}
-
-	if (losses.size() == 1)
-	{
-		return losses["out"];
-	}
-
-	return losses["out"] + 0.5 * losses["aux"];
-}
-
 int max_iter = 30;
 
 void training()
 {
 try
 {
-	auto meters = MetricLogger(" ");
 	auto start_training_time = chrono::system_clock::now();
+
 
 	if (torch::cuda::is_available()) {
 		std::cout << "CUDA available! Training on GPU." << std::endl;
@@ -64,7 +44,6 @@ try
 
 	segnet->train();
 	segnet->to(device);
-	//segnet->aux_ = true;
 
 	auto train_dataset = COCODataSet("annotations/instances_train2017.json", "D:/GIT/pytorch-cpp/COCOImage/train2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
@@ -89,17 +68,6 @@ try
 		}
 	}
 
-	//params = segnet->aux_classifier_->named_parameters(true /*recurse*/);
-	//for (auto& param : params)
-	//{
-	//	auto layer_name = param.key();
-	//
-	//	if (param.value().requires_grad())
-	//	{
-	//		trainable_params.push_back(param.value());
-	//	}
-	//}
-
 	params = segnet->_backbone->named_parameters(true /*recurse*/);
 	for (auto& param : params)
 	{
@@ -109,71 +77,23 @@ try
 		}
 	}
 
-	//::optim::Adam optimizer(trainable_params, torch::optim::AdamOptions(1e-3 /*learning rate*/));
 	torch::optim::SGD optimizer(trainable_params, torch::optim::SGDOptions(0.01 /*learning rate*/).momentum(0.9).weight_decay(1e-4));
-
-	std::map<std::string, torch::Tensor> loss_map;
-	std::chrono::duration<double> data_time, batch_time;
-	int iteration = 0;
-	float eta_seconds;
-	std::string eta_string;
-	int days, hours, minutes;
-	auto end = chrono::system_clock::now();
 
 	int checkpoint_period = 500;
 
 	for (int i = 0; i < max_iter; i++)
 	{
-		data_time = chrono::system_clock::now() - end;
-
-		for (const auto& batch : *train_loader)
-		{
-			auto data = batch.data;
-			auto targets = batch.target;
-
-			data = data.to(torch::kF32);
-			targets = targets.to(torch::kLong);
-
-			data = data.to(device);
-			targets = targets.to(device);
-
-			optimizer.zero_grad();
-
-			auto output = segnet->forward(data);
-
-			auto loss = criterion(output, targets);
-
-			loss_map["loss"] = loss;
-
-			meters.update(loss_map);
-
-			loss.backward();
-			optimizer.step();
-
-			batch_time = std::chrono::system_clock::now() - end;
-			end = std::chrono::system_clock::now();
-			meters.update(std::map<string, float>{ {"time", static_cast<float>(batch_time.count())}, { "data", static_cast<float>(data_time.count()) }});
-			eta_seconds = meters["time"].global_avg() * (max_iter - iteration);
-			days = eta_seconds / 60 / 60 / 24;
-			hours = eta_seconds / 60 / 60 - days * 24;
-			minutes = eta_seconds / 60 - hours * 60 - days * 24 * 60;
-			eta_string = to_string(days) + " day " + to_string(hours) + " h " + to_string(minutes) + " m";
-			if (iteration % 20 == 0 || iteration == max_iter) {
-				std::cout << "eta: " << eta_string << meters.delimiter_ << "iter: " << iteration << meters.delimiter_ << meters << meters.delimiter_ << meters.delimiter_;
-			}
-
-		}
-
+		train_one_epoch(segnet, device, train_loader, optimizer, max_iter);
 		torch::save(segnet, "model_" + to_string(i) + ".pt");
 	}
 
 	torch::save(segnet, "model_final.pt");
 
-	chrono::duration<double> total_training_time = chrono::system_clock::now() - start_training_time;
-	days = total_training_time.count() / 60 / 60 / 24;
-	hours = total_training_time.count() / 60 / 60 - days * 24;
-	minutes = total_training_time.count() / 60 - hours * 60 - days * 24 * 60;
-	std::cout << "Total training time: " << to_string(days) + " day " + to_string(hours) + " h " + to_string(minutes) + " m" << " ( " << total_training_time.count() / max_iter << "s / it)";
+	//chrono::duration<double> total_training_time = chrono::system_clock::now() - start_training_time;
+	//days = total_training_time.count() / 60 / 60 / 24;
+	//hours = total_training_time.count() / 60 / 60 - days * 24;
+	//minutes = total_training_time.count() / 60 - hours * 60 - days * 24 * 60;
+	//std::cout << "Total training time: " << to_string(days) + " day " + to_string(hours) + " h " + to_string(minutes) + " m" << " ( " << total_training_time.count() / max_iter << "s / it)";
 }
 catch (std::exception ex)
 {
@@ -184,9 +104,6 @@ catch (std::exception ex)
 
 void inference()
 {
-	auto meters = MetricLogger(" ");
-	auto start_training_time = chrono::system_clock::now();
-
 	if (torch::cuda::is_available()) {
 		std::cout << "CUDA available! Training on GPU." << std::endl;
 		device_type = torch::kCUDA;
