@@ -101,5 +101,11 @@
     <ClInclude Include="utills\transforms.h">
       <Filter>utills</Filter>
     </ClInclude>
+    <ClInclude Include="training.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="loss.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

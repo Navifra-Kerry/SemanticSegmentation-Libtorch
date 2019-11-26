@@ -2,8 +2,10 @@
 #include "training.h"
 
 
+
 torch::DeviceType device_type;
 const int64_t kTrainBatchSize = 4;
+const int64_t class_num = 3; //0 is background;
 using namespace std;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
@@ -40,19 +42,26 @@ try
 	torch::Device device(device_type);
 
 	SegmentationModel segnet;
-	segnet->deeplabv3_resnet101(false, 3);
-
-	segnet->train();
+	segnet->deeplabv3_resnet101(false, class_num);
 	segnet->to(device);
+
+
+	auto val_dataset = COCODataSet("annotations/instances_val2017.json", "D:/GIT/pytorch-cpp/COCOImage/val2017", true, { 0,17,18 })
+		.map(torch::data::transforms::Stack<>());
+	const size_t va_dataset_size = val_dataset.size().value();
+
+	auto val_loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(val_dataset),
+		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(4));
+
 
 	auto train_dataset = COCODataSet("annotations/instances_train2017.json", "D:/GIT/pytorch-cpp/COCOImage/train2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t train_dataset_size = train_dataset.size().value();
 
 	auto train_loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(train_dataset),
-		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(0));
+		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(4));
 
-	std::cout << train_dataset_size << std::endl;
+
 
 	std::vector<torch::Tensor> trainable_params;
 
@@ -79,11 +88,10 @@ try
 
 	torch::optim::SGD optimizer(trainable_params, torch::optim::SGDOptions(0.01 /*learning rate*/).momentum(0.9).weight_decay(1e-4));
 
-	int checkpoint_period = 500;
-
 	for (int i = 0; i < max_iter; i++)
 	{
 		train_one_epoch(segnet, device, train_loader, optimizer, max_iter);
+		evaluate(segnet, device, val_loader, class_num);
 		torch::save(segnet, "model_" + to_string(i) + ".pt");
 	}
 
@@ -201,8 +209,16 @@ void inference()
 	cv::waitKey(0);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-	training();
-	//inference();
+	
+
+	if(std::string(argv[1]) == "train")
+	{
+		training();
+	}
+	else
+	{
+		inference();
+	}
 }

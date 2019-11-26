@@ -14,6 +14,7 @@ void train_one_epoch(Net model, torch::Device device,
 	DataLoader& data_loader,
 	torch::optim::Optimizer& optimizer, int64_t max_iter)
 {
+	model->train();
 	auto meters = MetricLogger(" ");
 
 	std::map<std::string, torch::Tensor> loss_map;
@@ -60,6 +61,37 @@ void train_one_epoch(Net model, torch::Device device,
 		if (iteration % 20 == 0 || iteration == max_iter) {
 			std::cout << "eta: " << eta_string << " "<<"iter: " << iteration << meters;
 		}
-
 	}
+}
+
+template<typename Net, typename DataLoader>
+void evaluate(Net model, torch::Device device,
+	DataLoader& data_loader,
+	int64_t num_classes)
+{
+	model->eval();
+
+	torch::NoGradGuard;
+
+	ConfusionMatrix confmat(num_classes, device);
+
+	for (const auto& batch : *data_loader)
+	{
+		auto data = batch.data;
+		auto targets = batch.target;
+
+		data = data.to(torch::kF32);
+		targets = targets.to(torch::kLong);
+
+		data = data.to(device);
+		targets = targets.to(device);
+
+		auto output = model->forward(data);
+
+		auto out = output["out"];
+
+		confmat.update(targets.flatten(), out.argmax(1).flatten());
+	}
+
+	std::cout << confmat;
 }

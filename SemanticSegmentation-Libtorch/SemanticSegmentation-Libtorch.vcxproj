@@ -113,10 +113,12 @@
     <ClInclude Include="cocoapi\mask_api.h" />
     <ClInclude Include="DataSet\COCODataSet.h" />
     <ClInclude Include="DataSet\COCODetection.h" />
+    <ClInclude Include="loss.h" />
     <ClInclude Include="models\IntermediateLayerGetter.h" />
     <ClInclude Include="models\resnet.h" />
     <ClInclude Include="models\segmentation\DeeplabV3.h" />
     <ClInclude Include="models\segmentation\SegmentationModel.h" />
+    <ClInclude Include="training.h" />
     <ClInclude Include="utills\metric_logger.h" />
     <ClInclude Include="utills\transforms.h" />
   </ItemGroup>
