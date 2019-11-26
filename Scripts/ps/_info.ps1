@@ -109,13 +109,14 @@ function DisplayStart(
         return $true
     }
     Write-Host $(DisplayStartContinueMessage)
-    $choice = GetKey '^[1qQ]+$'
+    #$choice = GetKey '^[1qQ]+$'
 
-    if ($choice -contains "1") {
-        return $true
-    }
+    #if ($choice -contains "1") {
+    #    return $true
+    #}
 
-    return $false
+    #return $false
+    return $true
 }
 
 Function DisplayEnd() {

@@ -1,4 +1,4 @@
-@echo Transfer Learning Pytorch Binary Install Script
+@echo Semantic Segmentation Pytorch Binary Install Script
 @echo off
 
 setlocal
