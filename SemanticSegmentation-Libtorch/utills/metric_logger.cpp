@@ -12,10 +12,7 @@ void ConfusionMatrix::update(torch::Tensor a, torch::Tensor b)
 {
 	torch::NoGradGuard;
 
-	return;
-	std::cout << a.sizes() << b.sizes();
-
-	auto inds = _num_classes * (a + b);
+	auto inds = _num_classes * a + b;
 
 	_mat += torch::bincount(inds, {}, std::pow(_num_classes, 2)).reshape({ _num_classes, _num_classes });
 }
@@ -38,15 +35,12 @@ std::ostream& operator << (std::ostream& os, const ConfusionMatrix& confusion)
 {
 	torch::Tensor acc_global, acc, iou;
 
-#if 0
 	std::tie(acc_global, acc, iou) = confusion.compute();
 
-	os <<"test " <<"global correct: " << acc_global.item<float>() * 100 << "mean IoU: " << iou.mean().item<float>();
+	os <<"test " <<"global correct: " <<acc_global.item<float>() * 100 << "  mean IoU: " << iou.mean().item<float>();
 
 	os << "\n";
-#endif
 
-	os << " Not support";
 	return os;
 }
 
