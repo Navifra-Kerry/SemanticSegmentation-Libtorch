@@ -5,6 +5,33 @@
 </p>
 
 # Example
+```
+#Receive data through commandline.
+1. Open cmd.exe
+
+2. training or inference
+#example training 
+D:\vision>SemanticSegmentation-Libtorch.exe train data_dir 
+
+#example inference
+D:\vision>SemanticSegmentation-Libtorch.exe inference image_path model_path 
+```
+
+# DataSet
+```
+# Only Coco data sets are supported.
+
+diretory_root
+ cocodataset
+  -annotations
+   -instances_train2017.json
+   -instances_tran2017.json
+   -...
+  -train2017
+   - train images
+  -val2017
+   - val images
+```
 
 # Requirements
  * OpenCV 4.1.1
