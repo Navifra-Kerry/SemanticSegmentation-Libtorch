@@ -100,6 +100,12 @@ Masks::Masks(coco::siz h, coco::siz w, coco::siz n) {
 	_w = w;
 }
 
+Masks::~Masks()
+{
+	if (_mask != nullptr)
+		delete _mask;
+}
+
 RLEs _frString(std::vector<RLEstr>& rleObjs) {
 	size_t n = rleObjs.size();
 	RLEs Rs = RLEs(n);

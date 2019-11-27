@@ -29,6 +29,7 @@ struct RLEs {
 
 struct Masks {
 	Masks(coco::siz h, coco::siz w, coco::siz n);
+	~Masks();
 	coco::byte* _mask;
 	coco::siz _n, _w, _h;
 };
