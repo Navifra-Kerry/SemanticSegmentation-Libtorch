@@ -22,7 +22,7 @@ bool has_valid_annotation(std::vector<Annotation> anno)
 
 COCODataSet::COCODataSet(std::string annFile, std::string root, bool remove_images_without_annotations,
 	std::vector<int> cat_list)
-	:_coco_detection(root, annFile), _cat_list(cat_list)
+	:_coco_detection(root, annFile), _cat_list(cat_list), normalizeChannels({ 0.485, 0.456, 0.406 }, { 0.229, 0.224, 0.225 })
 {
 	int i = 0;
 	for (int i = 0; i < _cat_list.size(); i++)
@@ -152,6 +152,8 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 
 	torch::Tensor img_tensor = torch::from_blob(img.data, { img.rows, img.cols, 3 }, torch::kByte);
 	img_tensor = img_tensor.permute({ 2, 0, 1 });
+
+	img_tensor = normalizeChannels(img_tensor);
 
 #if 0 // Debug Data Inputs
 	std::cout << img_tensor.sizes() << std::endl;

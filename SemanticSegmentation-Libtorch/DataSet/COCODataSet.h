@@ -15,6 +15,7 @@ private:
 
 	std::vector<torch::Tensor> states, labels;
 	size_t ds_size;
+	torch::data::transforms::Normalize<> normalizeChannels;
 public:
 	COCODataSet(std::string annFile, std::string root, bool remove_images_without_annotations 
 		, std::vector<int> cat_list = std::vector<int>{});
