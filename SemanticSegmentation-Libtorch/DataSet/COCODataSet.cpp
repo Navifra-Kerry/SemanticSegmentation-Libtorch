@@ -1,6 +1,12 @@
 #include "cocoDataSet.h"
 #include "../cocoapi/mask.h"
 #include "../utills/transforms.h"
+#include <random> 
+
+std::random_device rd;
+std::mt19937 mersenne(rd());
+std::uniform_int_distribution<> die(1, 10);
+
 
 bool has_valid_annotation(std::vector<Annotation> anno) 
 {
@@ -134,8 +140,16 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	torch::Tensor target, _;
 	std::tie(target, _) = torch::max(mask_tensor, 0);
 	
-	///transform 구현 해야함 임시
+
 	cv::resize(img, img, cv::Size(base_size, base_size));
+
+
+	if (die(mersenne) % 2 == 0)
+	{
+		target = target.flip({ 1 });
+		cv::flip(img, img, 1);
+	}
+
 	torch::Tensor img_tensor = torch::from_blob(img.data, { img.rows, img.cols, 3 }, torch::kByte);
 	img_tensor = img_tensor.permute({ 2, 0, 1 });
 
