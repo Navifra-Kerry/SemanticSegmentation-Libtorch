@@ -4,6 +4,7 @@
     <LocalDebuggerCommand>D:\Git-Example\SemanticSegmentation-Libtorch\x64\Debug\SemanticSegmentation-Libtorch.exe</LocalDebuggerCommand>
     <LocalDebuggerWorkingDirectory>..\x64\Debug</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>train D:\GIT\pytorch-cpp\COCOImage\</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerWorkingDirectory>..\x64\Release</LocalDebuggerWorkingDirectory>

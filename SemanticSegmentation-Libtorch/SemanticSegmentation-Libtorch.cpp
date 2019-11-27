@@ -1,11 +1,11 @@
 ﻿#include <iostream>
 #include "training.h"
 
-
-
 torch::DeviceType device_type;
 const int64_t kTrainBatchSize = 4;
 const int64_t class_num = 3; //0 is background;
+const int max_iter = 15;
+
 using namespace std;
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
@@ -20,9 +20,6 @@ void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
 		map.push_back(cv::Scalar(r, g, b));
 	}
 }
-
-int max_iter = 30;
-
 void training(std::string data_dir)
 {
 try
@@ -49,34 +46,34 @@ try
 	auto val_dataset = COCODataSet(data_dir + "annotations\\instances_val2017.json", data_dir + "val2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t va_dataset_size = val_dataset.size().value();
-
+	
 	auto val_loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(val_dataset),
-		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(4));
+		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(8));
 
 
 	auto train_dataset = COCODataSet(data_dir + "annotations\\instances_train2017.json", data_dir + "train2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t train_dataset_size = train_dataset.size().value();
-
+	
 	auto train_loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(train_dataset),
-		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(4));
+		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(8));
 
 
 
 	std::vector<torch::Tensor> trainable_params;
-
-
+	
+	
 	auto params = segnet->_classifier->named_parameters(true /*recurse*/);
 	for (auto& param : params)
 	{
 		auto layer_name = param.key();
-
+	
 		if (param.value().requires_grad())
 		{
 			trainable_params.push_back(param.value());
 		}
 	}
-
+	
 	params = segnet->_backbone->named_parameters(true /*recurse*/);
 	for (auto& param : params)
 	{
