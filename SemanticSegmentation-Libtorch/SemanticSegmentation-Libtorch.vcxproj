@@ -70,6 +70,9 @@
       <AdditionalLibraryDirectories>..\Poco-1.9.4\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>c10.lib;torch.lib;opencv_world410d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy D:\local\opencv\build\x64\vc15\bin\*.dll $(OutDir) /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -92,6 +95,9 @@
       <AdditionalDependencies>c10.lib;torch.lib;opencv_world410.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\Poco-1.9.4\lib\x64;</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy D:\local\opencv\build\x64\vc15\bin\*.dll $(OutDir) /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cocoapi\cocoNote.cpp" />
