@@ -50,6 +50,9 @@ struct Categories
   std::string _supercategory;
 };
 
+/*
+Parser of MS COCO Annatation Files
+*/
 struct COCONote
 {
 	COCONote(std::string annotation_file);

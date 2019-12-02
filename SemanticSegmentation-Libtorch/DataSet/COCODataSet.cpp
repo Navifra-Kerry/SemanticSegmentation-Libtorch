@@ -1,4 +1,4 @@
-#include "cocoDataSet.h"
+ï»¿#include "cocoDataSet.h"
 #include "../cocoapi/mask.h"
 #include "../utills/transforms.h"
 #include <random> 
@@ -74,7 +74,7 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	auto coco_data = _coco_detection.get(idx);
 	cv::Mat img = coco_data.data;
 	
-	//Anatation °¡Á®¿À±â
+	//Get Annotation informationand delete the information except the category I want to learn.
 	std::vector<Annotation> anno = coco_data.target;
 	for (auto ann = anno.begin(); ann != anno.end();) 
 	{
@@ -88,7 +88,10 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 		}
 	}
 
-	//Mask Polygon °ú Ä«Å×°í¸® °¡Á® ¿À±â
+	// Annotation information is in Polygon type data type.
+	// Loop that converts type into matrix structure of H* W type.
+	// In the Matrix information, the corresponding category area has a value of 1, The rest are filled with values â€‹â€‹of zero
+	// The polygon information in the COCO DataSet x1,y1,x2,y2,x3,y3,xn,yn 	Type is of type Double Array..
 	std::vector<int> cats;
 	std::vector<std::vector<std::vector<double>>> polys;
 	for (auto& obj : anno)
@@ -99,17 +102,20 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 
 	std::vector<torch::Tensor>  mask_tensors;
 
-	//ÀÓ½Ã
+	//The input size of the image and mask is the Base Size for changing to 480..
 	int base_size = 480;
 
 	//Polygon To Mask Tensors
 	for (int k= 0; k< polys.size(); k++)
 	{
-		//¿Ö PolygonÀÌ 0ÀÌÁö?
+		// continue if the size of Polygon is 0
 		if (polys[k].size() == 0) continue;
+
+		// Resize Polygon after comparing scale between current loaded image and Base.
 		transforms::polygon::Resize((double)base_size / (double)img.cols, (double)base_size / (double)img.rows, polys[k]);
 
-		//ÀÓ½Ã
+		// Convert Polygon information to data type used by coco API to use coco API
+		// Return mask information.
 		auto frPoly = coco::frPoly(polys[k], base_size, base_size);
 
 		coco::RLEs Rs(1);
@@ -123,27 +129,36 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 		int shape = h * w * n;
 		torch::Tensor mask_tensor = torch::empty({ shape });
 
+		// Mask is 1 for category, 0 if not, so multiply by category ID to 2
+		// non-area is filled with zeros
 		float* data1 = mask_tensor.data_ptr<float>();
 		for (size_t i = 0; i < shape; ++i) {
 			data1[i] = static_cast<float>(masks._mask[i] * cats[k]);
 		}
 
+		// After mapping Mask_tensor to Category, change it to the same matrix form between images
+		// h * w
 		mask_tensor = mask_tensor.reshape({ static_cast<int64_t>(n),static_cast<int64_t>(w),
 			static_cast<int64_t>(h) }).permute({ 2, 1, 0 }).squeeze(2);//fortran order h, w, n
 
 		mask_tensors.push_back(mask_tensor);
 	}
 	
+	// mask_tensors changes the Vector to a Tensor Type.
+	// converted to n * h * w
 	auto mask_tensor = torch::stack(mask_tensors);
 
-	//Mask¿¡ Category mapping
+	// will merge the Tensors of the form n * h * w into one
+	// example 4 * h * w-> h * w;
+	// Get only the Max value, not the value of the same area.
+	// i.e. combine different category masks into one.
 	torch::Tensor target, _;
-	std::tie(target, _) = torch::max(mask_tensor, 0);
-	
+	std::tie(target, _) = torch::max(mask_tensor, 0);	
 
+	// Resizng the currently loaded image.
 	cv::resize(img, img, cv::Size(base_size, base_size));
 
-
+	// If the random value is a multiple of 2, Horizental Flip is performed on the image and the target.
 	if (die(mersenne) % 2 == 0)
 	{
 		target = target.flip({ 1 });
@@ -155,6 +170,7 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 
 	img_tensor = normalizeChannels(img_tensor);
 
+	// The code is Debug code to check whether Tensor and Tensor are properly input.
 #if 0 // Debug Data Inputs
 	std::cout << img_tensor.sizes() << std::endl;
 	std::cout << target.sizes() << std::endl;
@@ -186,6 +202,7 @@ torch::data::Example<> COCODataSet::get(size_t idx)
 	cv::waitKey(0);
 #endif
 
+	// Return image and Tensor in Tuple.
 	return { img_tensor.clone(), target.clone() };
 }
 

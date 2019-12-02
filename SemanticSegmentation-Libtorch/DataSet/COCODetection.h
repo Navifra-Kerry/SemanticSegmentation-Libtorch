@@ -13,7 +13,10 @@
 namespace rcnn {
 namespace data 
 {
-
+/*
+annFile  = path of annotation file 
+root	 = Path to image file ,annotation files have a Only image file names
+*/
 class COCODetection : public torch::data::datasets::Dataset<COCODetection, torch::data::Example<cv::Mat, std::vector<Annotation>>> 
 {
 

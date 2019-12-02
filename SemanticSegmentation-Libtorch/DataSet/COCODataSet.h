@@ -9,6 +9,19 @@
 
 bool has_valid_annotation(std::vector<Annotation> anno);
 
+/*
+annFile  = path of annotation file 
+root	 = Path to image file ,annotation files have a Only image file names 
+cat_list = Category information you want to learn ,  0 is Background, input as numbers
+		   Please refer to MS COCO 2017 category more information for the number..
+remove_images_without_annotations = Whether to delete an image without comments
+
+Example
+auto val_dataset = COCODataSet(data_dir + "annotations\\instances_val2017.json", data_dir + "val2017", true, { 0,17,18 })
+	.map(torch::data::transforms::Stack<>());
+const size_t va_dataset_size = val_dataset.size().value();
+
+*/
 class COCODataSet : public torch::data::Dataset<COCODataSet>
 {
 private:
