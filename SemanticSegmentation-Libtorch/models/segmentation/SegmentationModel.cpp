@@ -60,7 +60,7 @@ void SegmentationModelImpl::deeplabv3_resnet101(bool pretrained, int64_t num_cla
 	(
 		ASPP(ASPPImpl(2048, { 12,24,36 })),
 		torch::nn::Conv2d(
-			torch::nn::Conv2dOptions(256, 256, 3).padding(1).with_bias(false)),
+			torch::nn::Conv2dOptions(256, 256, 3).padding(1).bias(false)),
 		torch::nn::BatchNorm(
 			torch::nn::BatchNormOptions(256).eps(0.001).momentum(0.01)),
 		torch::nn::Functional(torch::relu),
@@ -92,7 +92,7 @@ void SegmentationModelImpl::deeplabv3_resnet50(bool pretrained, int64_t num_clas
 	(
 		ASPP(ASPPImpl(2048, { 12,24,36 })),
 		torch::nn::Conv2d(
-			torch::nn::Conv2dOptions(256, 256, 3).padding(1).with_bias(false)),
+			torch::nn::Conv2dOptions(256, 256, 3).padding(1).bias(false)),
 		torch::nn::BatchNorm(
 			torch::nn::BatchNormOptions(256).eps(0.001).momentum(0.01)),
 		torch::nn::Functional(torch::relu),
@@ -123,7 +123,7 @@ torch::nn::Sequential SegmentationModelImpl::_make_FCNHead(int64_t in_channels, 
 
 	return 	torch::nn::Sequential(
 		torch::nn::Conv2d(
-			torch::nn::Conv2dOptions(in_channels, inter_channels_, 3).padding(1).with_bias(false)),
+			torch::nn::Conv2dOptions(in_channels, inter_channels_, 3).padding(1).bias(false)),
 		torch::nn::BatchNorm(
 			torch::nn::BatchNormOptions(inter_channels_).eps(0.001).momentum(0.01)),
 		torch::nn::Functional(torch::relu),

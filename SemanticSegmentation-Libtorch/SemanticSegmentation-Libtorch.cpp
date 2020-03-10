@@ -1,8 +1,9 @@
 ﻿#include <iostream>
 #include "training.h"
+#include <filesystem>
 
 torch::DeviceType device_type;
-const int64_t kTrainBatchSize = 4;
+const int64_t kTrainBatchSize = 2;
 const int64_t class_num = 3; //0 is background;
 const int max_iter = 15;
 
@@ -34,6 +35,13 @@ try
 	else {
 		std::cout << "Training on CPU." << std::endl;
 		device_type = torch::kCPU;
+	}
+
+	if (std::filesystem::exists("resnet101_Python.pt") != true)
+	{
+		std::cout << "resnet101_Python.pt file could not be found. First run Convert.py and copy it to the run folder." << std::endl;
+
+		return;
 	}
 
 	torch::Device device(device_type);

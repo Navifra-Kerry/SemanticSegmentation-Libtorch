@@ -143,7 +143,7 @@ ResNetImpl<Block>::ResNetImpl(
 	: groups(groups),
 	base_width(width_per_group),
 	inplanes(64),
-	conv1(torch::nn::Conv2dOptions(3, 64, 7).stride(2).padding(3).with_bias(
+	conv1(torch::nn::Conv2dOptions(3, 64, 7).stride(2).padding(3).bias(
 		false).dilation(1)),
 	bn1(64),
 	fc(512 * Block::expansion, num_classes),

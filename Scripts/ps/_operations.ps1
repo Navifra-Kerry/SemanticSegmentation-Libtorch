@@ -6,9 +6,9 @@
           Download = @( ) ;
           Action = @() ;
          },
-        @{Name = "Libtorch 1.3 Install"; ShortName = "LIBTORCH-1.3"; Info = "Install LIBTORCH-1.3";
+        @{Name = "Libtorch 1.4 Install"; ShortName = "LIBTORCH-1.4"; Info = "Install LIBTORCH-1.3";
           Verification = @( @{Function = "VerifyDirectory"; Path = "$LibTorchPath"; } );
-          Download = @( @{Function = "Download"; Source = "https://download.pytorch.org/libtorch/cu101/libtorch-win-shared-with-deps-1.3.0.zip"; Destination = "$localCache\libtorch-win-shared-with-deps-1.3.0.zip" } );
+          Download = @( @{Function = "Download"; Source = "https://download.pytorch.org/libtorch/cu101/libtorch-win-shared-with-deps-1.4.0.zip"; Destination = "$localCache\libtorch-win-shared-with-deps-1.3.0.zip" } );
           Action = @( @{Function = "ExtractAllFromZip"; zipFileName = "$localCache\libtorch-win-shared-with-deps-1.3.0.zip"; destinationFolder = "$3rdPartyPath" ; } ) ;
         }
         ,

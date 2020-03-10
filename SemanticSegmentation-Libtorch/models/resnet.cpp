@@ -8,13 +8,13 @@ namespace _resnetimpl {
 		int64_t groups,
 		int64_t dilation) {
 		torch::nn::Conv2dOptions O(in, out, 3);
-		O.padding(dilation).stride(stride).groups(groups).with_bias(false).dilation(dilation);
+		O.padding(dilation).stride(stride).groups(groups).bias(false).dilation(dilation);
 		return torch::nn::Conv2d(O);
 	}
 
 	torch::nn::Conv2d conv1x1(int64_t in, int64_t out, int64_t stride) {
 		torch::nn::Conv2dOptions O(in, out, 1);
-		O.stride(stride).with_bias(false);
+		O.stride(stride).bias(false);
 		return torch::nn::Conv2d(O);
 	}
 

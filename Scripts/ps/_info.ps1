@@ -18,7 +18,7 @@ This script sets up Exampe prerequisites and Exampe environment on your system.
 The script will analyse your machine and will determine which components are required. 
 The required components will be downloaded in [$localCache]
 Repeated operation of this script will reuse already downloaded components.
-    - LibTorch1.3 will be installed into [$LibTorchPath]
+    - LibTorch1.4 will be installed into [$LibTorchPath]
     - OpenCV4.1.1 will be installed into [$OpenCVBasePath]
  "
 }
