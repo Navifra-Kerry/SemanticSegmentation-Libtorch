@@ -35,7 +35,7 @@ diretory_root
 
 # Requirements
  * OpenCV 4.1.1
- * Libtorch 1.3
+ * Libtorch 1.4
  * CUDA 10.2
  * Visual studio 2019
  * Windows 10 
