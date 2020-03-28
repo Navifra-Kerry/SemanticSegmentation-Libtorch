@@ -21,7 +21,7 @@ public:
 	torch::Tensor forward(const torch::Tensor& x);
 
 	torch::nn::Conv2d _conv1{ nullptr };
-	torch::nn::BatchNorm _bn1{ nullptr };
+	torch::nn::BatchNorm2d _bn1{ nullptr };
 	torch::nn::Functional _relu1{ nullptr };
 };
 
@@ -38,7 +38,7 @@ public:
 	torch::Tensor forward(const torch::Tensor& x);
 
 	torch::nn::Conv2d _conv1{ nullptr };
-	torch::nn::BatchNorm _bn1{ nullptr };
+	torch::nn::BatchNorm2d _bn1{ nullptr };
 	torch::nn::Functional _relu1{ nullptr };
 };
 

@@ -4,7 +4,7 @@ ASPPConvImpl::ASPPConvImpl(int64_t in_channels, int64_t out_channels, int64_t di
 {
 
 	_conv1 = torch::nn::Conv2d(torch::nn::Conv2dOptions(in_channels, out_channels, 3).padding(dilation).dilation(dilation).bias(false));
-	_bn1 = torch::nn::BatchNorm(out_channels);
+	_bn1 = torch::nn::BatchNorm2d(out_channels);
 	_relu1 = torch::nn::Functional(torch::relu);
 
 	register_module("0", _conv1);
@@ -32,7 +32,7 @@ torch::Tensor ASPPConvImpl::forward(const torch::Tensor& x)
 ASPPPoolingImpl::ASPPPoolingImpl(int64_t in_channels, int64_t out_channels)
 {
 	_conv1 = torch::nn::Conv2d(torch::nn::Conv2dOptions(in_channels, out_channels, 1).bias(false));
-	_bn1 = torch::nn::BatchNorm(out_channels);
+	_bn1 = torch::nn::BatchNorm2d(out_channels);
 	_relu1 = torch::nn::Functional(torch::relu);
 
 	register_module("1", _conv1);
@@ -65,7 +65,7 @@ ConvsImpl::ConvsImpl(int64_t in_channels, int64_t out_channels, std::vector<int6
 		torch::nn::Sequential
 		(
 			torch::nn::Conv2d(torch::nn::Conv2dOptions(in_channels, out_channels, 1).bias(false)),
-			torch::nn::BatchNorm(out_channels),
+			torch::nn::BatchNorm2d(out_channels),
 			torch::nn::Functional(torch::relu)
 		);
 
@@ -92,7 +92,7 @@ ASPPImpl::ASPPImpl(int64_t in_channels, std::vector<int64_t>  atrous_rates)
 	_project = torch::nn::Sequential
 	(
 		torch::nn::Conv2d(torch::nn::Conv2dOptions(5 * out_channels, out_channels, 1).bias(false)),
-		torch::nn::BatchNorm(out_channels),
+		torch::nn::BatchNorm2d(out_channels),
 		torch::nn::Functional(torch::relu),
 		torch::nn::Functional(torch::dropout, 0.5, true)
 	);
