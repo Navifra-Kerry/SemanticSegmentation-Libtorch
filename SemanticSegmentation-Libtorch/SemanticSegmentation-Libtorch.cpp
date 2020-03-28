@@ -64,7 +64,7 @@ try
 	const size_t train_dataset_size = train_dataset.size().value();
 	
 	auto train_loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(train_dataset),
-		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(8));
+		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(0));
 
 
 
