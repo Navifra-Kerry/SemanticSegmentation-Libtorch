@@ -3,7 +3,7 @@
 https://blog.kerrycho.com/Image-Segmentation-Libtorch/
 
 <p align="left">
- <a href="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/workflows/Main%20workflow/badge.svg"></a>
+ <a href="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/actions"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/workflows/C/C++%20CI/badge.svg?branch=master"></a>
 </p>
 
 # Example
