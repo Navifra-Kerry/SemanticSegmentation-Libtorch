@@ -9,13 +9,13 @@ on:
 jobs:
   build:
 
-    runs-on: [self-hosted, windows]
+    runs-on: windows-latest
     
     steps:
     - uses: actions/checkout@v2    
           
-    - name:  Setup MSBuild
-      shell: cmd
-      run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
-          msbuild SemanticSegmentation-Libtorch.sln /p:Platform="x64";Configuration="Release"
+    #- name:  Setup MSBuild
+    #  shell: cmd
+    #  run: |
+    #      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+    #      msbuild SemanticSegmentation-Libtorch.sln /p:Platform="x64";Configuration="Release"

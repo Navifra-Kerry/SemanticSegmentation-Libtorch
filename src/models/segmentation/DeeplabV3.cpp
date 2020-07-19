@@ -1,4 +1,4 @@
-#include "DeeplabV3.h"
+#include <models/segmentation/DeeplabV3.h>
 
 ASPPConvImpl::ASPPConvImpl(int64_t in_channels, int64_t out_channels, int64_t dilation)
 {

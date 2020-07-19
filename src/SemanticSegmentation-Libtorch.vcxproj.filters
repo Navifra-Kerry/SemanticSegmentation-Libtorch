@@ -30,9 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SemanticSegmentation-Libtorch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="cocoapi\mask.cpp">
       <Filter>cocoAPI</Filter>
     </ClCompile>
@@ -66,41 +63,11 @@
     <ClCompile Include="utills\transforms.cpp">
       <Filter>utills</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cocoapi\mask.h">
-      <Filter>cocoAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="cocoapi\mask_api.h">
-      <Filter>cocoAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="cocoapi\cocoNote.h">
-      <Filter>cocoAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="DataSet\COCODataSet.h">
-      <Filter>DataSet</Filter>
-    </ClInclude>
-    <ClInclude Include="DataSet\COCODetection.h">
-      <Filter>DataSet</Filter>
-    </ClInclude>
-    <ClInclude Include="models\segmentation\DeeplabV3.h">
-      <Filter>models\segmentation</Filter>
-    </ClInclude>
-    <ClInclude Include="models\segmentation\SegmentationModel.h">
-      <Filter>models\segmentation</Filter>
-    </ClInclude>
-    <ClInclude Include="models\IntermediateLayerGetter.h">
-      <Filter>models</Filter>
-    </ClInclude>
-    <ClInclude Include="models\resnet.h">
-      <Filter>models</Filter>
-    </ClInclude>
-    <ClInclude Include="utills\metric_logger.h">
-      <Filter>utills</Filter>
-    </ClInclude>
-    <ClInclude Include="utills\transforms.h">
-      <Filter>utills</Filter>
-    </ClInclude>
     <ClInclude Include="training.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>

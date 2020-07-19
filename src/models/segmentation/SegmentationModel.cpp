@@ -1,6 +1,6 @@
-#include "SegmentationModel.h"
-#include "DeeplabV3.h"
-#include "../resnet.h"
+#include <models/segmentation/SegmentationModel.h>
+#include <models/segmentation/DeeplabV3.h>
+#include <models/resnet.h>
 
 SegmentationModelImpl::SegmentationModelImpl()
 {

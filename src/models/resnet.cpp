@@ -1,4 +1,4 @@
-#include "resnet.h"
+#include <models/resnet.h>
 
 namespace _resnetimpl {
 	torch::nn::Conv2d conv3x3(
@@ -29,7 +29,7 @@ namespace _resnetimpl {
 		int64_t groups,
 		int64_t base_width ,int diation)
 		: stride(stride), downsample(downsample) {
-		if (groups != 1 or base_width != 64) {
+		if (groups != 1 || base_width != 64) {
 			std::cerr << "BasicBlock only supports groups=1 and base_width=64"
 				<< std::endl;
 			assert(false);
