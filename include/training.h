@@ -71,7 +71,7 @@ void evaluate(Net model, torch::Device device,
 {
 	model->eval();
 
-	torch::NoGradGuard;
+	torch::NoGradGuard nograd;
 
 	ConfusionMatrix confmat(num_classes, device);
 

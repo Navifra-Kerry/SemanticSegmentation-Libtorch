@@ -10,7 +10,7 @@ ConfusionMatrix::ConfusionMatrix(int64_t cls, torch::Device deviece)
 
 void ConfusionMatrix::update(torch::Tensor a, torch::Tensor b)
 {
-	torch::NoGradGuard;
+	torch::NoGradGuard nograd;
 
 	auto inds = _num_classes * a + b;
 
