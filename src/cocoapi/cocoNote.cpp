@@ -5,9 +5,20 @@
 #include <algorithm>
 #include <iostream>
 #include <ctime>
-#include <filesystem>
+
+#ifndef WIN32
+	#include <experimental/filesystem>
+#else
+	#include <filesystem>
+#endif
 
 using namespace Poco::JSON;
+
+#ifndef WIN32
+	namespace fs = std::experimental::filesystem;
+#else
+	namespace fs = std::filesystem;
+#endif
 
 Annotation::Annotation(const Object* j)
 {
@@ -107,7 +118,7 @@ Categories::Categories(): _id(0), _name(""), _supercategory("")
 COCONote::COCONote(std::string annotation_file)
 {
   std::cout << "loading annotations into memory...\n";
-  if (!std::filesystem::exists(annotation_file))
+  if (!fs::exists(annotation_file))
   {
 	  std::cout << "The annotation_file does not exist." << std::endl;
 	  std::cout << annotation_file << std::endl;

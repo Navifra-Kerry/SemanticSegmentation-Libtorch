@@ -1,13 +1,22 @@
 ﻿#include <iostream>
-#include "training.h"
-#include <filesystem>
-
+#include <training.h>
+#ifndef WIN32
+	#include <experimental/filesystem>
+#else
+	#include <filesystem>
+#endif
 torch::DeviceType device_type;
 const int64_t kTrainBatchSize = 2;
 const int64_t class_num = 3; //0 is background;
 const int max_iter = 15;
 
 using namespace std;
+#ifndef WIN32
+	namespace fs = std::experimental::filesystem;
+#else
+	namespace fs = std::filesystem;
+#endif
+
 
 void genarateColormap(std::vector<cv::Scalar>& map, int64_t numclass)
 {
@@ -37,7 +46,7 @@ try
 		device_type = torch::kCPU;
 	}
 
-	if (std::filesystem::exists("resnet101_Python.pt") != true)
+	if (fs::exists("resnet101_Python.pt") != true)
 	{
 		std::cout << "resnet101_Python.pt file could not be found. First run Convert.py and copy it to the run folder." << std::endl;
 

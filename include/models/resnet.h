@@ -173,10 +173,12 @@ ResNetImpl<Block>::ResNetImpl(
 				/*a=*/0,
 				torch::kFanOut,
 				torch::kReLU);
+#ifdef WIN32 /** Initialize err*/				
 		else if (auto M = dynamic_cast<torch::nn::BatchNormImpl*>(module.get())) {
 			torch::nn::init::constant_(M->weight, 1);
 			torch::nn::init::constant_(M->bias, 0);
 		}
+#endif
 	}
 
 	// Zero-initialize the last BN in each residual branch, so that the residual
