@@ -6,6 +6,20 @@ https://blog.kerrycho.com/Image-Segmentation-Libtorch/
  <a href="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/actions"><img alt="GitHub Actions status" src="https://github.com/kerry-Cho/SemanticSegmentation-Libtorch/workflows/C/C++%20CI/badge.svg?branch=master"></a>
 </p>
 
+# Current Support OS CMake
+ - [*] Windows
+ - [ ] Linux
+ - [ ] MacOS
+
+  ```
+  windows
+  mkdir build & cd build
+  cmake ..
+
+  linux
+  bash build.sh
+  ```
+
 # Example
 ```
 #Receive data through commandline.
