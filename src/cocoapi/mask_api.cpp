@@ -4,7 +4,7 @@
 * Code written by Piotr Dollar and Tsung-Yi Lin, 2015.
 * Licensed under the Simplified BSD License [see coco/license.txt]
 **************************************************************************/
-#include "mask_api.h"
+#include <cocoapi/mask_api.h>
 #include <math.h>
 #include <stdlib.h>
 namespace coco {

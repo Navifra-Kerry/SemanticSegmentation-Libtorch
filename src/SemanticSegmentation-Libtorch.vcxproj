@@ -62,7 +62,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Poco-1.9.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Poco-1.9.4;../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -85,7 +85,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Poco-1.9.4;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Poco-1.9.4;../include;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
@@ -109,28 +109,17 @@ copy ..\Poco-1.9.4\bin\*.dll $(OutDir) /Y</Command>
     <ClCompile Include="cocoapi\mask_api.cpp" />
     <ClCompile Include="DataSet\COCODataSet.cpp" />
     <ClCompile Include="DataSet\COCODetection.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="models\IntermediateLayerGetter.cpp" />
     <ClCompile Include="models\resnet.cpp" />
     <ClCompile Include="models\segmentation\DeeplabV3.cpp" />
     <ClCompile Include="models\segmentation\SegmentationModel.cpp" />
-    <ClCompile Include="SemanticSegmentation-Libtorch.cpp" />
     <ClCompile Include="utills\metric_logger.cpp" />
     <ClCompile Include="utills\transforms.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cocoapi\cocoNote.h" />
-    <ClInclude Include="cocoapi\mask.h" />
-    <ClInclude Include="cocoapi\mask_api.h" />
-    <ClInclude Include="DataSet\COCODataSet.h" />
-    <ClInclude Include="DataSet\COCODetection.h" />
     <ClInclude Include="loss.h" />
-    <ClInclude Include="models\IntermediateLayerGetter.h" />
-    <ClInclude Include="models\resnet.h" />
-    <ClInclude Include="models\segmentation\DeeplabV3.h" />
-    <ClInclude Include="models\segmentation\SegmentationModel.h" />
     <ClInclude Include="training.h" />
-    <ClInclude Include="utills\metric_logger.h" />
-    <ClInclude Include="utills\transforms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

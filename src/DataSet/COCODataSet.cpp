@@ -1,6 +1,6 @@
-﻿#include "cocoDataSet.h"
-#include "../cocoapi/mask.h"
-#include "../utills/transforms.h"
+﻿#include <DataSet/COCODataSet.h>
+#include <cocoapi/mask.h>
+#include <utills/transforms.h>
 #include <random> 
 
 std::random_device rd;

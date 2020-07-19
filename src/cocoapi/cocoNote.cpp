@@ -1,5 +1,5 @@
-#include "cocoNote.h"
-#include "mask.h"
+#include <cocoapi/cocoNote.h>
+#include <cocoapi/mask.h>
 #include <fstream>
 #include <cassert>
 #include <algorithm>

@@ -51,7 +51,7 @@ try
 	segnet->to(device);
 
 
-	auto val_dataset = COCODataSet(data_dir + "annotations\\instances_val2017.json", data_dir + "val2017", true, { 0,17,18 })
+	auto val_dataset = COCODataSet(data_dir + "annotations/instances_val2017.json", data_dir + "val2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t va_dataset_size = val_dataset.size().value();
 	
@@ -59,7 +59,7 @@ try
 		torch::data::DataLoaderOptions().batch_size(kTrainBatchSize).workers(8));
 
 
-	auto train_dataset = COCODataSet(data_dir + "annotations\\instances_train2017.json", data_dir + "train2017", true, { 0,17,18 })
+	auto train_dataset = COCODataSet(data_dir + "annotations/instances_train2017.json", data_dir + "train2017", true, { 0,17,18 })
 		.map(torch::data::transforms::Stack<>());
 	const size_t train_dataset_size = train_dataset.size().value();
 	

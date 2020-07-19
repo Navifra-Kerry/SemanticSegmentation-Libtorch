@@ -1,4 +1,4 @@
-#include "IntermediateLayerGetter.h"
+#include <models/IntermediateLayerGetter.h>
 
 IntermediateLayerGetterImpl::~IntermediateLayerGetterImpl()
 {
