@@ -7,7 +7,7 @@ https://blog.kerrycho.com/Image-Segmentation-Libtorch/
 </p>
 
 # Current Support OS CMake
- - [*] Windows
+ - [x] Windows
  - [ ] Linux
  - [ ] MacOS
 
